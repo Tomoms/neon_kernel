@@ -6417,7 +6417,7 @@ out_unlock:
 	return 0;
 }
 
-#ifdef CONFIG_NO_HZ
+#ifdef CONFIG_NO_HZ_COMMON
 /*
  * idle load balancing details
  * - When one of the busy CPUs notice that there may be an idle rebalancing
@@ -6665,7 +6665,7 @@ out:
 		rq->next_balance = next_balance;
 }
 
-#ifdef CONFIG_NO_HZ
+#ifdef CONFIG_NO_HZ_COMMON
 
 static int select_lowest_power_cpu(struct cpumask *cpus)
 {
@@ -6689,7 +6689,7 @@ static int select_lowest_power_cpu(struct cpumask *cpus)
 }
 
 /*
- * In CONFIG_NO_HZ case, the idle balance kickee will do the
+ * In CONFIG_NO_HZ_COMMON case, the idle balance kickee will do the
  * rebalancing for all the cpus for whom scheduler ticks are stopped.
  */
 static void nohz_idle_balance(struct rq *this_rq, enum cpu_idle_type idle)
@@ -6902,7 +6902,7 @@ void trigger_load_balance(struct rq *rq)
 
 	if (time_after_eq(jiffies, rq->next_balance))
 		raise_softirq(SCHED_SOFTIRQ);
-#ifdef CONFIG_NO_HZ
+#ifdef CONFIG_NO_HZ_COMMON
 	if (nohz_kick_needed(rq, &type))
 		nohz_balancer_kick(cpu, type);
 #endif
@@ -7380,7 +7380,7 @@ __init void init_sched_fair_class(void)
 #ifdef CONFIG_SMP
 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
 
-#ifdef CONFIG_NO_HZ
+#ifdef CONFIG_NO_HZ_COMMON
 	nohz.next_balance = jiffies;
 	zalloc_cpumask_var(&nohz.idle_cpus_mask, GFP_NOWAIT);
 	cpu_notifier(sched_ilb_notifier, 0);
