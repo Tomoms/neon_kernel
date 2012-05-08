@@ -297,13 +297,13 @@ int propagate_mnt(struct mount *dest_mnt, struct dentry *dest_dentry,
 		} while (n != m);
 	}
 out:
-	br_write_lock(vfsmount_lock);
+	br_write_lock(&vfsmount_lock);
 	list_for_each_entry(n, tree_list, mnt_hash) {
 		m = n->mnt_parent;
 		if (m->mnt_master != dest_mnt->mnt_master)
 			CLEAR_MNT_MARK(m->mnt_master);
 	}
-	br_write_unlock(vfsmount_lock);
+	br_write_unlock(&vfsmount_lock);
 	return ret;
 }
 
