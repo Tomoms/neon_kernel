@@ -55,16 +55,6 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/vmscan.h>
 
-/*
- * reclaim_mode determines how the inactive list is shrunk
- * RECLAIM_MODE_SINGLE: Reclaim only order-0 pages
- * RECLAIM_MODE_COMPACTION: For high-order allocations, reclaim a number of
- *			order-0 pages and then compact the zone
- */
-typedef unsigned __bitwise__ reclaim_mode_t;
-#define RECLAIM_MODE_SINGLE		((__force reclaim_mode_t)0x01u)
-#define RECLAIM_MODE_COMPACTION		((__force reclaim_mode_t)0x10u)
-
 struct scan_control {
 	/* Incremented by the number of inactive pages that were scanned */
 	unsigned long nr_scanned;
@@ -397,25 +387,6 @@ unsigned long shrink_slab(struct shrink_control *shrinkctl,
 out:
 	cond_resched();
 	return freed;
-}
-
-static void set_reclaim_mode(int priority, struct scan_control *sc)
-{
-	/*
-	 * Restrict reclaim/compaction to costly allocations or when
-	 * under memory pressure
-	 */
-	if (COMPACTION_BUILD && sc->order &&
-			(sc->order > PAGE_ALLOC_COSTLY_ORDER ||
-			 priority < DEF_PRIORITY - 2))
-		sc->reclaim_mode = RECLAIM_MODE_COMPACTION;
-	else
-		sc->reclaim_mode = RECLAIM_MODE_SINGLE;
-}
-
-static void reset_reclaim_mode(struct scan_control *sc)
-{
-	sc->reclaim_mode = RECLAIM_MODE_SINGLE;
 }
 
 static inline int is_page_cache_freeable(struct page *page)
@@ -1475,8 +1446,6 @@ shrink_inactive_list(unsigned long nr_to_scan, struct mem_cgroup_zone *mz,
 
 		safe = 1;
 	}
-
-	set_reclaim_mode(priority, sc);
 
 	lru_add_drain();
 

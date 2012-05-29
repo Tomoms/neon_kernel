@@ -30,7 +30,7 @@
 	(RECLAIM_WB_ASYNC) \
 	)
 
-#define trace_shrink_flags(file, sync) \
+#define trace_shrink_flags(file) \
 	( \
 		(file ? RECLAIM_WB_FILE : RECLAIM_WB_ANON) | \
 		(RECLAIM_WB_ASYNC) \
