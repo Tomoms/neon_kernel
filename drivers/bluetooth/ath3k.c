@@ -62,7 +62,11 @@ static struct usb_device_id ath3k_table[] = {
 
 	/* Atheros AR3011 with sflash firmware*/
 	{ USB_DEVICE(0x0CF3, 0x3002) },
+<<<<<<< HEAD
 
+=======
+	{ USB_DEVICE(0x0CF3, 0xE019) },
+>>>>>>> 7f801fcbd4bc... Bluetooth: Support AR3011 in Acer Iconia Tab W500
 	{ USB_DEVICE(0x13d3, 0x3304) },
 	{ USB_DEVICE(0x0930, 0x0215) },
 	{ USB_DEVICE(0x0489, 0xE03D) },
