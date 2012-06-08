@@ -3950,8 +3950,13 @@ static void l2cap_conf_rfc_get(struct sock *sk, void *rsp, int len)
 
 		switch (type) {
 		case L2CAP_CONF_RFC:
-			if (olen == sizeof(rfc))
-				memcpy(&rfc, (void *)val, olen);
+			if (type != L2CAP_CONF_RFC)
+				continue;
+
+			if (olen != sizeof(rfc))
+				break;
+
+			memcpy(&rfc, (void *)val, olen);
 			break;
 		case L2CAP_CONF_EXT_WINDOW:
 			txwin_ext = val;
