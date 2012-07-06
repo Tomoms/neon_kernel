@@ -89,10 +89,6 @@ EXPORT_SYMBOL(memmove);
 EXPORT_SYMBOL(memchr);
 EXPORT_SYMBOL(__memzero);
 
-	/* user mem (segment) */
-EXPORT_SYMBOL(__strnlen_user);
-EXPORT_SYMBOL(__strncpy_from_user);
-
 EXPORT_SYMBOL(mmioset);
 EXPORT_SYMBOL(mmiocpy);
 
