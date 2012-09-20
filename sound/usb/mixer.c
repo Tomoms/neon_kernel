@@ -1415,8 +1415,8 @@ static int parse_audio_feature_unit(struct mixer_build *state, int unitid,
 		master_bits &= ~UAC_CONTROL_BIT(UAC_FU_VOLUME);
 		break;
 	case USB_ID(0x1130, 0xf211):
-		usb_audio_info(state->chip,
-			       "usbmixer: volume control quirk for Tenx TP6911 Audio Headset\n");
+		snd_printk(KERN_INFO
+			   "usbmixer: volume control quirk for Tenx TP6911 Audio Headset\n");
 		/* disable non-functional volume control */
 		channels = 0;
 		break;
