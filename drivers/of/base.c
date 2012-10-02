@@ -987,9 +987,9 @@ static int of_property_notify(int action, struct device_node *np,
 #endif
 
 /**
- * prom_add_property - Add a property to a node
+ * of_add_property - Add a property to a node
  */
-int prom_add_property(struct device_node *np, struct property *prop)
+int of_add_property(struct device_node *np, struct property *prop)
 {
 	struct property **next;
 	unsigned long flags;
@@ -1023,14 +1023,14 @@ int prom_add_property(struct device_node *np, struct property *prop)
 }
 
 /**
- * prom_remove_property - Remove a property from a node.
+ * of_remove_property - Remove a property from a node.
  *
  * Note that we don't actually remove it, since we have given out
  * who-knows-how-many pointers to the data using get-property.
  * Instead we just move the property to the "dead properties"
  * list, so it won't be found any more.
  */
-int prom_remove_property(struct device_node *np, struct property *prop)
+int of_remove_property(struct device_node *np, struct property *prop)
 {
 	struct property **next;
 	unsigned long flags;
@@ -1069,7 +1069,7 @@ int prom_remove_property(struct device_node *np, struct property *prop)
 }
 
 /*
- * prom_update_property - Update a property in a node, if the property does
+ * of_update_property - Update a property in a node, if the property does
  * not exist, add it.
  *
  * Note that we don't actually remove it, since we have given out
@@ -1077,8 +1077,7 @@ int prom_remove_property(struct device_node *np, struct property *prop)
  * Instead we just move the property to the "dead properties" list,
  * and add the new property to the property list
  */
-int prom_update_property(struct device_node *np,
-			 struct property *newprop)
+int of_update_property(struct device_node *np, struct property *newprop)
 {
 	struct property **next, *oldprop;
 	unsigned long flags;
@@ -1093,7 +1092,7 @@ int prom_update_property(struct device_node *np,
 
 	oldprop = of_find_property(np, newprop->name, NULL);
 	if (!oldprop)
-		return prom_add_property(np, newprop);
+		return of_add_property(np, newprop);
 
 	write_lock_irqsave(&devtree_lock, flags);
 	next = &np->properties;
