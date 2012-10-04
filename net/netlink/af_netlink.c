@@ -1747,6 +1747,7 @@ static int netlink_dump(struct sock *sk)
 	mutex_unlock(nlk->cb_mutex);
 
 	module_put(module);
+
 	netlink_destroy_callback(cb);
 	return 0;
 
