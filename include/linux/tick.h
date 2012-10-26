@@ -178,4 +178,10 @@ static inline void tick_nohz_full_kick(void) { }
 static inline void tick_nohz_full_kick_all(void) { }
 #endif
 
+# ifdef CONFIG_CPU_IDLE_GOV_MENU
+extern void menu_hrtimer_cancel(void);
+# else
+static inline void menu_hrtimer_cancel(void) {}
+# endif /* CONFIG_CPU_IDLE_GOV_MENU */
+
 #endif
