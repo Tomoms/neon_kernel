@@ -412,7 +412,6 @@ EXPORT_SYMBOL_GPL(cpuidle_disable_device);
 static int __cpuidle_register_device(struct cpuidle_device *dev)
 {
 	int ret;
-	struct device *cpu_dev = get_cpu_device((unsigned long)dev->cpu);
 	struct cpuidle_driver *cpuidle_driver = cpuidle_get_driver();
 
 	if (!try_module_get(cpuidle_driver->owner))
@@ -422,7 +421,7 @@ static int __cpuidle_register_device(struct cpuidle_device *dev)
 
 	per_cpu(cpuidle_devices, dev->cpu) = dev;
 	list_add(&dev->device_list, &cpuidle_detected_devices);
-	ret = cpuidle_add_sysfs(cpu_dev);
+	ret = cpuidle_add_sysfs(dev);
 	if (ret)
 		goto err_sysfs;
 
@@ -434,7 +433,7 @@ static int __cpuidle_register_device(struct cpuidle_device *dev)
 	return 0;
 
 err_coupled:
-	cpuidle_remove_sysfs(cpu_dev);
+	cpuidle_remove_sysfs(dev);
 	wait_for_completion(&dev->kobj_unregister);
 err_sysfs:
 	list_del(&dev->device_list);
@@ -478,7 +477,6 @@ EXPORT_SYMBOL_GPL(cpuidle_register_device);
  */
 void cpuidle_unregister_device(struct cpuidle_device *dev)
 {
-	struct device *cpu_dev = get_cpu_device((unsigned long)dev->cpu);
 	struct cpuidle_driver *cpuidle_driver = cpuidle_get_driver();
 
 	if (dev->registered == 0)
@@ -488,7 +486,7 @@ void cpuidle_unregister_device(struct cpuidle_device *dev)
 
 	cpuidle_disable_device(dev);
 
-	cpuidle_remove_sysfs(cpu_dev);
+	cpuidle_remove_sysfs(dev);
 	list_del(&dev->device_list);
 	wait_for_completion(&dev->kobj_unregister);
 	per_cpu(cpuidle_devices, dev->cpu) = NULL;
