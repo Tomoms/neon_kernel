@@ -295,9 +295,13 @@ static int get_ctl_value_v1(struct usb_mixer_elem_info *cval, int request,
 	err = snd_usb_autoresume(cval->mixer->chip);
 	if (err < 0)
 		return -EIO;
+<<<<<<< HEAD
 
 	down_read(&chip->shutdown_rwsem);
 
+=======
+	down_read(&chip->shutdown_rwsem);
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	while (timeout-- > 0) {
 		if (chip->shutdown)
 			break;
@@ -345,7 +349,11 @@ static int get_ctl_value_v2(struct usb_mixer_elem_info *cval, int request,
 		goto error;
 
 	down_read(&chip->shutdown_rwsem);
+<<<<<<< HEAD
 	if (chip->shutdown) {
+=======
+	if (chip->shutdown)
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 		ret = -ENODEV;
 	} else {
 		idx = snd_usb_ctrl_intf(chip) | (cval->id << 8);
@@ -469,9 +477,13 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 	err = snd_usb_autoresume(chip);
 	if (err < 0)
 		return -EIO;
+<<<<<<< HEAD
 
 	down_read(&chip->shutdown_rwsem);
 
+=======
+	down_read(&chip->shutdown_rwsem);
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	while (timeout-- > 0) {
 		if (chip->shutdown)
 			break;

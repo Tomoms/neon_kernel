@@ -36,7 +36,10 @@ struct snd_usb_audio {
 	struct snd_card *card;
 	struct usb_interface *pm_intf;
 	u32 usb_id;
+<<<<<<< HEAD
 	struct mutex mutex;
+=======
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	struct rw_semaphore shutdown_rwsem;
 	unsigned int shutdown:1;
 	unsigned int probing:1;

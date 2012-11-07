@@ -384,7 +384,10 @@ static int snd_usb_audio_create(struct usb_device *dev, int idx,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	mutex_init(&chip->mutex);
+=======
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	init_rwsem(&chip->shutdown_rwsem);
 	chip->index = idx;
 	chip->dev = dev;
@@ -604,6 +607,10 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 		return;
 
 	card = chip->card;
+<<<<<<< HEAD
+=======
+	mutex_lock(&register_mutex);
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	down_write(&chip->shutdown_rwsem);
 	chip->shutdown = 1;
 	up_write(&chip->shutdown_rwsem);
@@ -631,9 +638,17 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 			snd_usb_mixer_disconnect(p);
 		}
 		usb_chip[chip->index] = NULL;
+<<<<<<< HEAD
 		mutex_unlock(&register_mutex);
 		snd_card_free_when_closed(card);
 	} else {
+=======
+		up_write(&chip->shutdown_rwsem);
+		mutex_unlock(&register_mutex);
+		snd_card_free_when_closed(card);
+	} else {
+		up_write(&chip->shutdown_rwsem);
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 		mutex_unlock(&register_mutex);
 	}
 }
@@ -666,9 +681,13 @@ int snd_usb_autoresume(struct snd_usb_audio *chip)
 	int err = -ENODEV;
 
 	down_read(&chip->shutdown_rwsem);
+<<<<<<< HEAD
 	if (chip->probing && chip->in_pm)
 		err = 0;
 	else if (!chip->shutdown)
+=======
+	if (!chip->shutdown && !chip->probing)
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 		err = usb_autopm_get_interface(chip->pm_intf);
 	up_read(&chip->shutdown_rwsem);
 
@@ -678,7 +697,11 @@ int snd_usb_autoresume(struct snd_usb_audio *chip)
 void snd_usb_autosuspend(struct snd_usb_audio *chip)
 {
 	down_read(&chip->shutdown_rwsem);
+<<<<<<< HEAD
 	if (!chip->shutdown && !chip->probing && !chip->in_pm)
+=======
+	if (!chip->shutdown && !chip->probing)
+>>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 		usb_autopm_put_interface(chip->pm_intf);
 	up_read(&chip->shutdown_rwsem);
 }
