@@ -608,9 +608,12 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 
 	card = chip->card;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	mutex_lock(&register_mutex);
 >>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
+=======
+>>>>>>> 2ce3809e3420... ALSA: usb-audio: Fix mutex deadlock at disconnection
 	down_write(&chip->shutdown_rwsem);
 	chip->shutdown = 1;
 	up_write(&chip->shutdown_rwsem);
@@ -639,6 +642,7 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 		}
 		usb_chip[chip->index] = NULL;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		mutex_unlock(&register_mutex);
 		snd_card_free_when_closed(card);
 	} else {
@@ -649,6 +653,11 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 	} else {
 		up_write(&chip->shutdown_rwsem);
 >>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
+=======
+		mutex_unlock(&register_mutex);
+		snd_card_free_when_closed(card);
+	} else {
+>>>>>>> 2ce3809e3420... ALSA: usb-audio: Fix mutex deadlock at disconnection
 		mutex_unlock(&register_mutex);
 	}
 }
