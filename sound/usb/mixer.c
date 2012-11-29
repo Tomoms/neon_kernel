@@ -1378,9 +1378,15 @@ static int parse_audio_feature_unit(struct mixer_build *state, int unitid,
 		channels = (hdr->bLength - 7) / csize - 1;
 		bmaControls = hdr->bmaControls;
 		if (hdr->bLength < 7 + csize) {
+<<<<<<< HEAD
 			usb_audio_err(state->chip,
 				      "unit %u: invalid UAC_FEATURE_UNIT descriptor\n",
 				      unitid);
+=======
+			snd_printk(KERN_ERR "usbaudio: unit %u: "
+				   "invalid UAC_FEATURE_UNIT descriptor\n",
+				   unitid);
+>>>>>>> d065f1243729... ALSA: usb-audio: fix invalid length check for RME and other UAC 2 devices
 			return -EINVAL;
 		}
 	} else {
@@ -1389,9 +1395,15 @@ static int parse_audio_feature_unit(struct mixer_build *state, int unitid,
 		channels = (hdr->bLength - 6) / 4 - 1;
 		bmaControls = ftr->bmaControls;
 		if (hdr->bLength < 6 + csize) {
+<<<<<<< HEAD
 			usb_audio_err(state->chip,
 				      "unit %u: invalid UAC_FEATURE_UNIT descriptor\n",
 				      unitid);
+=======
+			snd_printk(KERN_ERR "usbaudio: unit %u: "
+				   "invalid UAC_FEATURE_UNIT descriptor\n",
+				   unitid);
+>>>>>>> d065f1243729... ALSA: usb-audio: fix invalid length check for RME and other UAC 2 devices
 			return -EINVAL;
 		}
 	}
