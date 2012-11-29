@@ -2656,7 +2656,6 @@ loop_again:
 			    !zone_balanced(zone, testorder,
 					   balance_gap, end_zone)) {
 				shrink_zone(zone, &sc);
-
 				reclaim_state->reclaimed_slab = 0;
 				nr_slab = shrink_slab(&shrink, sc.nr_scanned, lru_pages);
 				sc.nr_reclaimed += reclaim_state->reclaimed_slab;
