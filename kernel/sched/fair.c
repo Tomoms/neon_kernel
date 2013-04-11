@@ -6224,7 +6224,10 @@ int sched_group_set_shares(struct task_group *tg, unsigned long shares)
 		se = tg->se[i];
 		/* Propagate contribution to hierarchy */
 		raw_spin_lock_irqsave(&rq->lock, flags);
-		for_each_sched_entity(se) {
+
+		/* Possible calls to update_curr() need rq clock */
+		update_rq_clock(rq);
+		for_each_sched_entity(se){
 			update_cfs_shares(group_cfs_rq(se));
 			/* update contribution to parent */
 			update_entity_load_avg(se, 1);
