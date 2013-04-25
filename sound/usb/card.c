@@ -666,7 +666,11 @@ int snd_usb_autoresume(struct snd_usb_audio *chip)
 	int err = -ENODEV;
 
 	down_read(&chip->shutdown_rwsem);
+<<<<<<< HEAD
 	if (chip->probing && chip->in_pm)
+=======
+	if (chip->probing)
+>>>>>>> 8a70ddb052fe... ALSA: usb-audio: Fix autopm error during probing
 		err = 0;
 	else if (!chip->shutdown)
 		err = usb_autopm_get_interface(chip->pm_intf);
