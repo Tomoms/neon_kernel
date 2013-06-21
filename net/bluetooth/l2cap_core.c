@@ -5844,9 +5844,14 @@ static int l2cap_sig_amp(struct l2cap_conn *conn, struct l2cap_cmd_hdr *cmd,
 {
 	struct l2cap_amp_signal_work *amp_work;
 
+<<<<<<< HEAD
 	amp_work = kzalloc(sizeof(*amp_work), GFP_ATOMIC);
 	if (!amp_work)
 		return -ENOMEM;
+=======
+	if (cmd_len < sizeof(*rsp))
+		return -EPROTO;
+>>>>>>> 6ec88fcb4aa2... Bluetooth: Fix invalid length check in l2cap_information_rsp()
 
 	INIT_WORK(&amp_work->work, l2cap_amp_signal_worker);
 	amp_work->conn = conn;
