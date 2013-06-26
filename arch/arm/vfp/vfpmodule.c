@@ -23,6 +23,7 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/export.h>
+#include <linux/seq_file.h>
 
 #include <asm/cp15.h>
 #include <asm/cputype.h>
