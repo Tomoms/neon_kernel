@@ -1641,7 +1641,7 @@ static int mmc_blk_err_check(struct mmc_card *card,
 		}
 #endif
 #endif /* CONFIG_MACH_MSM8974_14001 */
-		
+
 		switch (mmc_blk_cmd_recovery(card, req, brq, &ecc_err, &gen_err)) {
 		case ERR_RETRY:
 			return MMC_BLK_RETRY;
@@ -1683,6 +1683,7 @@ static int mmc_blk_err_check(struct mmc_card *card,
 		}
 
 		timeout = jiffies + msecs_to_jiffies(MMC_BLK_TIMEOUT_MS);
+
 		do {
 			int err = get_card_status(card, &status, 5);
 			if (err) {
@@ -1708,6 +1709,7 @@ static int mmc_blk_err_check(struct mmc_card *card,
 
 				return MMC_BLK_CMD_ERR;
 			}
+
 			/*
 			 * Some cards mishandle the status bits,
 			 * so make sure to check both the busy
