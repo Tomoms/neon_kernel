@@ -5024,7 +5024,7 @@ redo:
 		env.load_move	= imbalance;
 		env.src_cpu	= busiest->cpu;
 		env.src_rq	= busiest;
-		env.loop_max  = min(sysctl_sched_nr_migrate,
+		env.loop_max  = min_t(unsigned long, sysctl_sched_nr_migrate,
 					busiest->cfs.h_nr_running);
 
 		update_h_load(env.src_cpu);
