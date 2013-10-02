@@ -1353,8 +1353,8 @@ static int __cpufreq_remove_dev_prepare(struct device *dev,
 					CPUFREQ_REMOVE_POLICY, data);
 
 			if (!frozen) {
-				pr_debug("%s: policy Kobject moved to cpu: %d "
-					 "from: %d\n",__func__, new_cpu, cpu);
+				pr_debug("%s: policy Kobject moved to cpu: %d from: %d\n",
+						__func__, new_cpu, cpu);
 			}
 		}
 	}
