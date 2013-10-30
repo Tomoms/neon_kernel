@@ -41,4 +41,6 @@ struct msm_spi_platform_data {
 	u32  bam_consumer_pipe_index;
 	u32  bam_producer_pipe_index;
 	bool rt_priority;
+	bool do_not_create_sysfs_file;
+	bool use_pinctrl;
 };
