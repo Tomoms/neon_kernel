@@ -5004,6 +5004,7 @@ static unsigned int selinux_ip_postroute(struct sk_buff *skb, int ifindex,
 				return NF_DROP_ERR(-ECONNREFUSED);
 			}
 		}
+
 		if (selinux_conn_sid(sksec->sid, skb_sid, &peer_sid))
 			return NF_DROP;
 		secmark_perm = PACKET__SEND;
