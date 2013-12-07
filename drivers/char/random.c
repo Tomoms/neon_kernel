@@ -681,10 +681,10 @@ retry:
 	}
 
 	if (r == &input_pool) {
-		int entropy_bytes = entropy_count >> ENTROPY_SHIFT;
+		int entropy_bits = entropy_count >> ENTROPY_SHIFT;
 
 		/* should we wake readers? */
-		if (entropy_bytes >= random_read_wakeup_thresh) {
+		if (entropy_bits >= random_read_wakeup_thresh) {
 			wake_up_interruptible(&random_read_wait);
 			kill_fasync(&fasync, SIGIO, POLL_IN);
 		}
@@ -693,7 +693,7 @@ retry:
 		 * forth between them, until the output pools are 75%
 		 * full.
 		 */
-		if (entropy_bytes > random_write_wakeup_thresh &&
+		if (entropy_bits > random_write_wakeup_thresh &&
 		    r->initialized &&
 		    r->entropy_total >= 2*random_read_wakeup_thresh) {
 			static struct entropy_store *last = &blocking_pool;
