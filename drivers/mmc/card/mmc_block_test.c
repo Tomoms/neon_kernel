@@ -1797,6 +1797,11 @@ static void bkops_end_io_final_fn(struct request *rq, int err)
 		(struct test_request *)rq->elv.priv[0];
 	BUG_ON(!test_rq);
 
+	if (!access_ok(VERIFY_WRITE, buffer, count))
+		return count;
+
+	memset((void *)buffer, 0, count);
+
 	test_rq->req_completed = 1;
 	test_rq->req_result = err;
 
