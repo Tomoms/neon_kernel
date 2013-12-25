@@ -26,6 +26,13 @@
 
 #define DT_CMD_HDR 6
 
+/* 
+ * Basic Color Preset 
+ * 0: Disabled 1: Vivid 2: Stock Override
+ */
+static int color_preset = 0;
+module_param(color_preset, int, 0755);
+
 #define MIN_REFRESH_RATE 30
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
@@ -434,6 +441,10 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 
 	pr_debug("%s: ctrl=%pK ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
+	if (color_preset == 1)
+		ctrl->on_cmds.cmds[1].payload[0] = 0x77;
+	else if (color_preset == 2)
+		ctrl->on_cmds.cmds[1].payload[0] = 0xFF;
 	if (ctrl->on_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->on_cmds);
 
