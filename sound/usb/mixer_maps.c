@@ -322,12 +322,15 @@ static struct usbmix_name_map hercules_usb51_map[] = {
 	{ 0 }				/* terminator */
 };
 
+<<<<<<< HEAD
 /* Plantronics Gamecom 780 has a broken volume control, better to disable it */
 static struct usbmix_name_map gamecom780_map[] = {
 	{ 9, NULL }, /* FU, speaker out */
 	{}
 };
 
+=======
+>>>>>>> 969d5499ee64... ALSA: usb-audio: work around KEF X300A firmware bug
 static const struct usbmix_name_map kef_x300a_map[] = {
 	{ 10, NULL }, /* firmware locks up (?) when we try to access this FU */
 	{ 0 }
@@ -421,10 +424,13 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.ignore_ctl_error = 1,
 	},
 	{
+<<<<<<< HEAD
 		.id = USB_ID(0x200c, 0x1018),
 		.map = ebox44_map,
 	},
 	{
+=======
+>>>>>>> 969d5499ee64... ALSA: usb-audio: work around KEF X300A firmware bug
 		.id = USB_ID(0x27ac, 0x1000),
 		.map = kef_x300a_map,
 	},
