@@ -1504,6 +1504,11 @@ static int attach_recursive_mnt(struct mount *source_mnt,
 	return 0;
 
  out_cleanup_ids:
+	while (!list_empty(&tree_list)) {
+		child = list_first_entry(&tree_list, struct mount, mnt_hash);
+		umount_tree(child, 0, &tree_list);
+	}
+	br_write_unlock(&vfsmount_lock);
 	cleanup_group_ids(source_mnt, NULL);
  out:
 	return err;
@@ -1840,7 +1845,7 @@ static int do_add_mount(struct mount *newmnt, struct path *path, int mnt_flags)
 {
 	int err;
 
-	mnt_flags &= ~(MNT_SHARED | MNT_WRITE_HOLD | MNT_INTERNAL);
+	mnt_flags &= ~MNT_INTERNAL_FLAGS;
 
 	err = lock_mount(path);
 	if (err)
