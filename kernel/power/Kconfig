@@ -283,3 +283,9 @@ config STATE_NOTIFIER
 	default y
 	help
 	  Allows monitoring the current display state.
+
+config PM_SYNC_BEFORE_SUSPEND
+	bool "Sync file systems before suspend"
+	depends on PM
+	default n
+
