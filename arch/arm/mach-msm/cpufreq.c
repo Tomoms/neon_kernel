@@ -253,8 +253,14 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 	INIT_WORK(&cpu_work->work, set_cpu_work);
 	init_completion(&cpu_work->complete);
 
-	if (cpufreq_frequency_table_cpuinfo(policy, table))
+	if (cpufreq_frequency_table_cpuinfo(policy, table)) {
+		policy->cpuinfo.min_freq = 268800;
+		policy->cpuinfo.max_freq = 1958400;
 		pr_err("cpufreq: failed to get policy min/max\n");
+	}
+
+	policy->max = 1958400;
+	policy->min = 268800;
 
 	cur_freq = clk_get_rate(cpu_clk[policy->cpu])/1000;
 
@@ -276,7 +282,7 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 		return ret;
 	pr_debug("cpufreq: cpu%d init at %d switching to %d\n",
 			policy->cpu, cur_freq, table[index].frequency);
-	policy->cur = table[index].frequency;
+	policy->cur = policy->max;
 
 	return 0;
 }
