@@ -22,6 +22,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+#include <linux/swap.h>
 #include "ion_priv.h"
 
 struct ion_page_pool_item {
