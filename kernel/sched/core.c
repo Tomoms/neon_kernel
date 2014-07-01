@@ -1601,6 +1601,8 @@ static int cpufreq_notifier_policy(struct notifier_block *nb,
 		struct rq *rq = cpu_rq(i);
 
 		rq->capacity = compute_capacity(i);
+		rq->max_possible_capacity = rq->capacity *
+				rq->max_possible_freq / rq->max_freq;
 		rq->load_scale_factor = compute_load_scale_factor(i);
 	}
 
@@ -8315,12 +8317,13 @@ void __init sched_init(void)
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
+		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 		rq->cur_freq = 1;
 		rq->max_freq = 1;
 		rq->min_freq = 1;
 		rq->max_possible_freq = 1;
-		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
+		rq->max_possible_capacity = 0;
 		rq->cumulative_runnable_avg = 0;
 		rq->efficiency = 1024;
 		rq->capacity = 1024;
