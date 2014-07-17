@@ -358,3 +358,4 @@
 354	i386	seccomp			sys_seccomp
 349	i386	sched_setattr		sys_sched_setattr
 350	i386	sched_getattr		sys_sched_getattr
+355	i386	getrandom		sys_getrandom
