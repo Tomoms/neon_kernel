@@ -3390,6 +3390,7 @@ migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 	se->exec_start = 0;
 }
 #endif
+}
 #endif /* CONFIG_SMP */
 
 static unsigned long
