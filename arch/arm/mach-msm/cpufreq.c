@@ -40,6 +40,10 @@
 #include <asm/div64.h>
 #endif
 
+#ifdef CONFIG_CPU_VOLTAGE_TABLE
+static struct cpufreq_frequency_table *dts_freq_table;
+#endif
+
 static DEFINE_MUTEX(l2bw_lock);
 
 static struct clk *cpu_clk[NR_CPUS];
@@ -509,6 +513,23 @@ static int cpufreq_parse_dt(struct device *dev)
 	freq_table[i].index = i;
 	freq_table[i].frequency = CPUFREQ_TABLE_END;
 
+#ifdef CONFIG_CPU_VOLTAGE_TABLE
+	dts_freq_table =
+		devm_kzalloc(dev, (nf + 1) *
+			sizeof(struct cpufreq_frequency_table),
+			GFP_KERNEL);
+
+	if (!dts_freq_table)
+		return -ENOMEM;
+
+	*dts_freq_table = *freq_table;
+
+	for (i = 0; i < nf; i++)
+		dts_freq_table[i].frequency = data[i];
+
+	dts_freq_table[i].frequency = CPUFREQ_TABLE_END;
+#endif
+
 	devm_kfree(dev, data);
 
 	return 0;
@@ -548,6 +569,22 @@ const struct file_operations msm_cpufreq_fops = {
 	.llseek		= seq_lseek,
 	.release	= seq_release,
 };
+#endif
+
+#ifdef CONFIG_CPU_VOLTAGE_TABLE
+bool is_used_by_scaling(unsigned int freq)
+{
+	unsigned int i, cpu_freq;
+
+	for (i = 0; dts_freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
+		cpu_freq = dts_freq_table[i].frequency;
+		if (cpu_freq == CPUFREQ_ENTRY_INVALID)
+			continue;
+		if (freq == cpu_freq)
+			return true;
+	}
+	return false;
+}
 #endif
 
 static int __init msm_cpufreq_probe(struct platform_device *pdev)
