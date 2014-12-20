@@ -856,7 +856,7 @@ xt_replace_table(struct xt_table *table,
 	local_bh_enable();
 
 #ifdef CONFIG_AUDIT
-	if (audit_enabled && debug_mask) {
+/*	if (audit_enabled) {
 		struct audit_buffer *ab;
 
 		ab = audit_log_start(current->audit_context, GFP_KERNEL,
@@ -867,7 +867,7 @@ xt_replace_table(struct xt_table *table,
 					 private->number);
 			audit_log_end(ab);
 		}
-	}
+	}*/
 #endif
 
 	return private;
