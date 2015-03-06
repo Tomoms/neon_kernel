@@ -50,7 +50,12 @@
 #include "pm.h"
 #include "modem_notifier.h"
 #include "platsmp.h"
-
+#ifdef CONFIG_KEXEC_HARDBOOT
+#include <asm/setup.h>
+#include <asm/memory.h>
+#include <linux/memblock.h>
+#define OPPO_PERSISTENT_RAM_SIZE	(SZ_1M)
+#endif
 
 static struct memtype_reserve msm8974_reserve_table[] __initdata = {
 	[MEMTYPE_SMI] = {
@@ -230,6 +235,26 @@ static struct persistent_ram msm_pr __initdata = {
 
 void __init msm8974_init_very_early(void)
 {
+#ifdef CONFIG_KEXEC_HARDBOOT
+	// Reserve space for hardboot page - just after ram_console,
+	// at the start of second memory bank
+	int ret;
+	phys_addr_t start;
+	struct membank* bank;
+	
+	if (meminfo.nr_banks < 2) {
+		pr_err("%s: not enough membank\n", __func__);
+		return;
+	}
+	
+	bank = &meminfo.bank[1];
+	start = bank->start + SZ_1M + OPPO_PERSISTENT_RAM_SIZE;
+	ret = memblock_remove(start, SZ_1M);
+	if(!ret)
+		pr_info("Hardboot page reserved at 0x%X\n", start);
+	else
+		pr_err("Failed to reserve space for hardboot page at 0x%X!\n", start);
+#endif
 	msm8974_early_memory();
 	persistent_ram_early_init(&msm_pr);
 }

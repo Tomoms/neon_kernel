@@ -17,6 +17,11 @@
 #define __ASM_ARCH_MEMORY_H
 #include <linux/types.h>
 
+#if defined(CONFIG_KEXEC_HARDBOOT)
+#define KEXEC_HB_PAGE_ADDR		UL(0x2F600000)
+#define KEXEC_HB_KERNEL_LOC		UL(0x3208000)
+#endif
+
 /* physical offset of RAM */
 #define PLAT_PHYS_OFFSET UL(CONFIG_PHYS_OFFSET)
 
