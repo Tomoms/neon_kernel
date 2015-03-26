@@ -207,6 +207,9 @@ static void asmp_suspend(void)
 		if (cpu != 0 && cpu_online(cpu))
 			cpu_down(cpu);
 
+	asmp_param.min_cpus = 1;
+	asmp_param.max_cpus = 3;
+
 	pr_info(ASMP_TAG"Screen -> Off. Suspended.\n");
 }
 
@@ -218,6 +221,9 @@ static void __ref asmp_resume(void)
 	for_each_possible_cpu(cpu)
 		if (cpu_is_offline(cpu))
 			cpu_up(cpu);
+
+	asmp_param.min_cpus = 2;
+	asmp_param.max_cpus = 4;
 
 	last_boost_time = ktime_to_us(ktime_get());
 
