@@ -427,3 +427,4 @@ obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 obj-$(CONFIG_PERFMAP) += perfmap.o
 obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
 obj-$(CONFIG_ASMP) 		+= autosmp.o
+obj-$(CONFIG_INTELLI_HOTPLUG) += intelli_hotplug.o
