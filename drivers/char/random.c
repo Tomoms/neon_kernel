@@ -608,7 +608,6 @@ static void credit_entropy_bits(struct entropy_store *r, int nbits)
 	if (!nbits)
 		return;
 
-	DEBUG_ENT("added %d entropy credits to %s\n", nbits, r->name);
 retry:
 	entropy_count = orig = ACCESS_ONCE(r->entropy_count);
 	if (nfrac < 0) {
@@ -1397,12 +1396,11 @@ urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 	int ret;
 
 #ifdef CONFIG_CRYPTO_FIPS
-	if (get_cc_mode_state())
+	if (get_cc_mode_state()) {
 		return random_read(file, buf, nbytes, ppos);
-	else {
+	} else
 #endif
-	int ret;
-
+	{
 	if (unlikely(nonblocking_pool.initialized == 0))
 		printk_once(KERN_NOTICE "random: %s urandom read "
 			    "with %d bits of entropy available\n",
