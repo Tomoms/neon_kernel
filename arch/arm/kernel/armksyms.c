@@ -48,6 +48,9 @@ extern void __aeabi_ulcmp(void);
 
 extern void fpundefinstr(void);
 
+void mmioset(void *, unsigned int, size_t);
+void mmiocpy(void *, const void *, size_t);
+
 	/* platform dependent support */
 EXPORT_SYMBOL(arm_delay_ops);
 
@@ -89,6 +92,9 @@ EXPORT_SYMBOL(__memzero);
 	/* user mem (segment) */
 EXPORT_SYMBOL(__strnlen_user);
 EXPORT_SYMBOL(__strncpy_from_user);
+
+EXPORT_SYMBOL(mmioset);
+EXPORT_SYMBOL(mmiocpy);
 
 #ifdef CONFIG_MMU
 EXPORT_SYMBOL(copy_page);
