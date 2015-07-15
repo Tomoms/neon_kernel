@@ -2620,7 +2620,6 @@ global_root:
 		error = prepend(buffer, buflen, "/", 1);
 	if (!error)
 		error = is_mounted(vfsmnt) ? 1 : 2;
-
 	return error;
 }
 

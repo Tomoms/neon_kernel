@@ -1487,7 +1487,7 @@ static int attach_recursive_mnt(struct mount *source_mnt,
 	for (p = source_mnt; p; p = next_mnt(p, source_mnt))
 		set_mnt_shared(p);
 	} else {
-		br_write_lock(vfsmount_lock);
+		br_write_lock(&vfsmount_lock);
 	}
 	if (parent_path) {
 		detach_mnt(source_mnt, parent_path);
@@ -1511,7 +1511,7 @@ static int attach_recursive_mnt(struct mount *source_mnt,
 		child = list_first_entry(&tree_list, struct mount, mnt_hash);
 		umount_tree(child, 0, &tree_list);
 	}
-	br_write_unlock(vfsmount_lock);
+	br_write_unlock(&vfsmount_lock);
 	cleanup_group_ids(source_mnt, NULL);
  out:
 	return err;
@@ -1719,9 +1719,9 @@ static int do_remount(struct path *path, int flags, int mnt_flags,
 		err = change_mount_flags(path->mnt, flags);
 	else {
 		err = do_remount_sb2(path->mnt, sb, flags, data, 0);
-		br_write_lock(vfsmount_lock);
+		br_write_lock(&vfsmount_lock);
 		propagate_remount(mnt);
-		br_write_unlock(vfsmount_lock);
+		br_write_unlock(&vfsmount_lock);
 	}
 	if (!err) {
 		br_write_lock(&vfsmount_lock);
@@ -2295,23 +2295,6 @@ static struct mnt_namespace *alloc_mnt_ns(struct user_namespace *user_ns)
 	return new_ns;
 }
 
-void mnt_make_longterm(struct vfsmount *mnt)
-{
-	__mnt_make_longterm(real_mount(mnt));
-}
-
-void mnt_make_shortterm(struct vfsmount *m)
-{
-#ifdef CONFIG_SMP
-	struct mount *mnt = real_mount(m);
-	if (atomic_add_unless(&mnt->mnt_longterm, -1, 1))
-		return;
-	br_write_lock(&vfsmount_lock);
-	atomic_dec(&mnt->mnt_longterm);
-	br_write_unlock(&vfsmount_lock);
-#endif
-}
-
 /*
  * Allocate a new namespace structure and populate it with contents
  * copied from the namespace of the passed in task structure.
@@ -2719,9 +2702,9 @@ void kern_unmount(struct vfsmount *mnt)
 {
 	/* release long term mount so mount point can be released */
 	if (!IS_ERR_OR_NULL(mnt)) {
-		br_write_lock(vfsmount_lock);
+		br_write_lock(&vfsmount_lock);
 		real_mount(mnt)->mnt_ns = NULL;
-		br_write_unlock(vfsmount_lock);
+		br_write_unlock(&vfsmount_lock);
 		mntput(mnt);
 	}
 }
