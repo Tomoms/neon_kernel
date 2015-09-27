@@ -609,6 +609,9 @@ do {									\
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0))
 #define netdev_priv(dev) dev->priv
-#endif 
+#endif
 
-#endif 
+#define RANDOM32	prandom_u32
+#define SRANDOM32(entropy)	prandom_seed(entropy)
+
+#endif

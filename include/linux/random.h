@@ -3,13 +3,13 @@
  *
  * Include file for the random number generator.
  */
-
 #ifndef _LINUX_RANDOM_H
 #define _LINUX_RANDOM_H
 
 #include <linux/types.h>
 #include <linux/ioctl.h>
 #include <linux/irqnr.h>
+#include <linux/uapi_random.h>
 
 /* ioctl()'s for the random number generator */
 
@@ -41,7 +41,7 @@ struct rand_pool_info {
 };
 
 struct rnd_state {
-	__u32 s1, s2, s3, s4 ;
+	__u32 s1, s2, s3, s4;
 };
 
 /* Exported functions */
@@ -158,6 +158,11 @@ static inline int arch_has_random_seed(void)
 }
 #endif
 
-#endif /* __KERNEL___ */
+/* Pseudo random number generator from numerical recipes. */
+static inline u32 next_pseudo_random32(u32 seed)
+{
+	return seed * 1664525 + 1013904223;
+}
 
 #endif /* _LINUX_RANDOM_H */
+#endif
