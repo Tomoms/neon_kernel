@@ -513,7 +513,6 @@ static int msm_ipc_router_ioctl(struct socket *sock,
 			break;
 		}
 		server_arg.num_entries_found = ret;
-
 		ret = copy_to_user((void *)arg, &server_arg,
 				   sizeof(server_arg));
 
