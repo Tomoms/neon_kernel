@@ -1665,10 +1665,22 @@ int spi_write_then_read(struct spi_device *spi,
 	struct spi_transfer	x[2];
 	u8			*local_buf;
 
-	/* Use preallocated DMA-safe buffer.  We can't avoid copying here,
-	 * (as a pure convenience thing), but we can keep heap costs
-	 * out of the hot path ...
+	/* Use preallocated DMA-safe buffer if we can.  We can't avoid
+	 * copying here, (as a pure convenience thing), but we can
+	 * keep heap costs out of the hot path unless someone else is
+	 * using the pre-allocated buffer or the transfer is too large.
 	 */
+#ifdef CONFIG_SND_SOC_WM5110
+	/* LGE_CHANGE, yeri.lee@lge.com, 2013-10-31, wm5110 Bring up */
+	if ((n_tx + n_rx) > SPI_BUFSIZ || !mutex_trylock(&lock)) {
+		local_buf = kmalloc(max((unsigned int)SPI_BUFSIZ, (unsigned int)(n_tx + n_rx)),
+				    GFP_KERNEL | GFP_DMA);
+		if (!local_buf)
+			return -ENOMEM;
+	} else {
+		local_buf = buf;
+	}
+#else
 	if ((n_tx + n_rx) > SPI_BUFSIZ)
 		return -EINVAL;
 
@@ -1685,9 +1697,9 @@ int spi_write_then_read(struct spi_device *spi,
 
 	/* ... unless someone else is using the pre-allocated buffer */
 	if (!mutex_trylock(&lock)) {
-		local_buf = kmalloc(SPI_BUFSIZ, GFP_KERNEL);
-		if (!local_buf)
-			return -ENOMEM;
+	      local_buf = kmalloc(SPI_BUFSIZ, GFP_KERNEL | GFP_DMA);
+	      if (!local_buf)
+	          return -ENOMEM;
 	} else
 		local_buf = buf;
 
