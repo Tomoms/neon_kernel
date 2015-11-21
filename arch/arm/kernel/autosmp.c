@@ -75,7 +75,7 @@ static struct asmp_param_struct {
 	.cpufreq_up = 95,
 	.cpufreq_down = 80,
 	.cycle_up = 1,
-	.cycle_down = 1,
+	.cycle_down = 0,
 	.min_boost_freq = DEFAULT_MIN_BOOST_FREQ,
 	.cpus_boosted = DEFAULT_NR_CPUS_BOOSTED,
 	.enabled = ASMP_ENABLED,
