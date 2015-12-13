@@ -1321,6 +1321,7 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 		break;
 	}
 
+<<<<<<< HEAD
 	/* get min/max values */
 	get_min_max_with_quirks(cval, 0, kctl);
 
@@ -1333,6 +1334,9 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 				SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK;
 		}
 	}
+=======
+	snd_usb_mixer_fu_apply_quirk(state->mixer, cval, unitid, kctl);
+>>>>>>> d359d1d221bc... ALSA: usb-audio: Add a more accurate volume quirk for AudioQuest DragonFly
 
 	range = (cval->max - cval->min) / cval->res;
 	/*
