@@ -50,6 +50,7 @@ static DEFINE_PER_CPU(struct asmp_cpudata_t, asmp_cpudata);
 #endif
 
 static struct delayed_work asmp_work;
+static struct work_struct suspend_work, resume_work;
 static struct workqueue_struct *asmp_workq;
 static bool enabled_switch = ASMP_ENABLED;
 
@@ -194,7 +195,7 @@ static void __cpuinit asmp_work_fn(struct work_struct *work)
 }
 
 #ifdef CONFIG_STATE_NOTIFIER
-static void asmp_suspend(void)
+static void asmp_suspend(struct work_struct *work)
 {
 	unsigned int cpu;
 
@@ -213,7 +214,7 @@ static void asmp_suspend(void)
 	pr_info(ASMP_TAG"Screen -> Off. Suspended.\n");
 }
 
-static void __ref asmp_resume(void)
+static void __cpuinit asmp_resume(struct work_struct *work)
 {
 	unsigned int cpu;
 
@@ -334,6 +335,20 @@ static const struct input_device_id autosmp_ids[] = {
 		.evbit = { BIT_MASK(EV_KEY) },
 	},
 	{ },
+
+static void asmp_power_suspend(struct power_suspend *handle)
+{
+	queue_work(system_power_efficient_wq, &suspend_work);
+}
+
+static void asmp_power_resume(struct power_suspend *handle)
+{
+	queue_work(system_power_efficient_wq, &resume_work);
+}
+
+static struct power_suspend __refdata asmp_power_suspend_handler = {
+	.suspend = asmp_power_suspend,
+	.resume = asmp_power_resume,
 };
 
 static struct input_handler autosmp_input_handler = {
@@ -620,6 +635,17 @@ static int __init asmp_init(void)
 	for_each_possible_cpu(cpu)
 		per_cpu(asmp_cpudata, cpu).times_hotplugged = 0;
 #endif
+
+	asmp_workq = alloc_workqueue("asmp", WQ_HIGHPRI, 0);
+	if (!asmp_workq)
+		return -ENOMEM;
+	INIT_DELAYED_WORK(&asmp_work, asmp_work_fn);
+	if (enabled)
+		queue_delayed_work(asmp_workq, &asmp_work,
+				   msecs_to_jiffies(ASMP_STARTDELAY));
+
+	INIT_WORK(&suspend_work, asmp_suspend);
+	INIT_WORK(&resume_work, asmp_resume);
 
 	asmp_kobject = kobject_create_and_add("autosmp", kernel_kobj);
 	if (asmp_kobject) {
