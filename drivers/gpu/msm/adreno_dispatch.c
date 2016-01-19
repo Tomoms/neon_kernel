@@ -1688,9 +1688,7 @@ static void adreno_dispatcher_work(struct kthread_work *work)
 	 * stragglers
 	 */
 	if (dispatcher->inflight == 0 && count) {
-		kgsl_mutex_lock(&device->mutex, &device->mutex_owner);
 		queue_work(device->work_queue, &device->event_work);
-		kgsl_mutex_unlock(&device->mutex, &device->mutex_owner);
 	}
 
 	/* Dispatch new commands if we have the room */
@@ -1708,7 +1706,9 @@ done:
 
 		/* There are still things in flight - update the idle counts */
 		kgsl_mutex_lock(&device->mutex, &device->mutex_owner);
-		kgsl_pwrscale_idle(device);
+		kgsl_pwrscale_update(device);
+		mod_timer(&device->idle_timer, jiffies +
+				device->pwrctrl.interval_timeout);
 		kgsl_mutex_unlock(&device->mutex, &device->mutex_owner);
 	} else {
 		/* There is nothing left in the pipeline.  Shut 'er down boys */
@@ -1730,11 +1730,6 @@ done:
 
 		kgsl_mutex_unlock(&device->mutex, &device->mutex_owner);
 	}
-
-	/* Before leaving update the pwrscale information */
-	kgsl_mutex_lock(&device->mutex, &device->mutex_owner);
-	kgsl_pwrscale_idle(device);
-	kgsl_mutex_unlock(&device->mutex, &device->mutex_owner);
 
 	mutex_unlock(&dispatcher->mutex);
 }
