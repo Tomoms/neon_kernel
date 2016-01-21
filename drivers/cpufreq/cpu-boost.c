@@ -234,7 +234,7 @@ static int boost_mig_sync_thread(void *data)
 	unsigned long flags;
 	unsigned int req_freq;
 
-	while(1) {
+	while (1) {
 		wait_event_interruptible(s->sync_wq, s->pending ||
 					kthread_should_stop());
 
