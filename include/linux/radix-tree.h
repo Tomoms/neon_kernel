@@ -331,7 +331,7 @@ void **radix_tree_next_chunk(struct radix_tree_root *root,
  * @iter:	pointer to radix tree iterator
  * Returns:	current chunk size
  */
-static __always_inline unsigned
+static __always_inline long
 radix_tree_chunk_size(struct radix_tree_iter *iter)
 {
 	return iter->next_index - iter->index;
@@ -365,9 +365,9 @@ radix_tree_next_slot(void **slot, struct radix_tree_iter *iter, unsigned flags)
 			return slot + offset + 1;
 		}
 	} else {
-		unsigned size = radix_tree_chunk_size(iter) - 1;
+		long size = radix_tree_chunk_size(iter);
 
-		while (size--) {
+		while (--size > 0) {
 			slot++;
 			iter->index++;
 			if (likely(*slot))
