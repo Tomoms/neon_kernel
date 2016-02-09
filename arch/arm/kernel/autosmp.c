@@ -49,6 +49,7 @@ struct asmp_cpudata_t {
 static DEFINE_PER_CPU(struct asmp_cpudata_t, asmp_cpudata);
 #endif
 
+static struct notifier_block notif;
 static struct delayed_work asmp_work;
 static struct work_struct suspend_work, resume_work;
 static struct workqueue_struct *asmp_workq;
@@ -84,7 +85,6 @@ static struct asmp_param_struct {
 };
 
 static u64 last_boost_time;
-static unsigned int cycle = 0;
 
 /*
  * suspend mode, if set = 1 hotplug will sleep,
@@ -109,6 +109,9 @@ static void max_min_check(void)
 	if (asmp_param.min_cpus > asmp_param.max_cpus)
 		asmp_param.min_cpus = asmp_param.max_cpus;
 }
+
+static unsigned int cycle = 0, delay0 = 1;
+static unsigned long delay_jif;
 
 static void __cpuinit asmp_work_fn(struct work_struct *work)
 {
@@ -214,7 +217,7 @@ static void asmp_suspend(struct work_struct *work)
 	pr_info(ASMP_TAG"Screen -> Off. Suspended.\n");
 }
 
-static void __cpuinit asmp_resume(struct work_struct *work)
+static __ref void asmp_resume(struct work_struct *work)
 {
 	unsigned int cpu;
 
@@ -336,20 +339,32 @@ static const struct input_device_id autosmp_ids[] = {
 	},
 	{ },
 
-static void asmp_power_suspend(struct power_suspend *handle)
+static void asmp_power_suspend(void)
 {
 	queue_work(system_power_efficient_wq, &suspend_work);
 }
 
-static void asmp_power_resume(struct power_suspend *handle)
+static void asmp_power_resume(void)
 {
 	queue_work(system_power_efficient_wq, &resume_work);
 }
 
-static struct power_suspend __refdata asmp_power_suspend_handler = {
-	.suspend = asmp_power_suspend,
-	.resume = asmp_power_resume,
-};
+static int lcd_notifier_callback(struct notifier_block *this,
+				unsigned long event, void *data)
+{
+	switch (event) {
+	case LCD_EVENT_ON_START:
+			asmp_power_resume();
+			break;
+	case LCD_EVENT_OFF_END:
+			asmp_power_suspend();
+			break;
+	default:
+			break;
+	}
+
+	return NOTIFY_OK;
+}
 
 static struct input_handler autosmp_input_handler = {
 	.event		= autosmp_input_event,
@@ -467,9 +482,9 @@ struct kobject *asmp_kobject;
 
 #define show_one(file_name, object)					\
 static ssize_t show_##file_name						\
-(struct kobject *kobj, struct attribute *attr, char *buf)		\
+(struct kobject *kobj, struct attribute *attr, char *buf)	\
 {									\
-	return sprintf(buf, "%u\n", asmp_param.object);			\
+	return sprintf(buf, "%u\n", asmp_param.object);	\
 }
 show_one(delay, delay);
 show_one(min_cpus, min_cpus);
@@ -629,6 +644,8 @@ static struct attribute_group asmp_stats_attr_group = {
 static int __init asmp_init(void)
 {
 	int ret = 0;
+	unsigned int cpu;
+	int rc;
 
 	asmp_param.max_cpus = NR_CPUS;
 #if DEBUG
@@ -646,6 +663,10 @@ static int __init asmp_init(void)
 
 	INIT_WORK(&suspend_work, asmp_suspend);
 	INIT_WORK(&resume_work, asmp_resume);
+
+	notif.notifier_call = lcd_notifier_callback;
+	if (lcd_register_client(&notif))
+		return -EINVAL;
 
 	asmp_kobject = kobject_create_and_add("autosmp", kernel_kobj);
 	if (asmp_kobject) {
