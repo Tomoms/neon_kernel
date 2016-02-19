@@ -61,8 +61,6 @@ static struct asmp_param_struct {
 	unsigned int min_cpus;
 	unsigned int cpufreq_up;
 	unsigned int cpufreq_down;
-	unsigned int cycle_up;
-	unsigned int cycle_down;
 	unsigned int cpus_boosted;
 	unsigned int min_boost_freq;
 	bool enabled;
@@ -76,8 +74,6 @@ static struct asmp_param_struct {
 	.min_cpus = 1,
 	.cpufreq_up = 95,
 	.cpufreq_down = 80,
-	.cycle_up = 1,
-	.cycle_down = 0,
 	.min_boost_freq = DEFAULT_MIN_BOOST_FREQ,
 	.cpus_boosted = DEFAULT_NR_CPUS_BOOSTED,
 	.enabled = ASMP_ENABLED,
@@ -110,7 +106,7 @@ static void max_min_check(void)
 		asmp_param.min_cpus = asmp_param.max_cpus;
 }
 
-static unsigned int cycle = 0, delay0 = 1;
+static unsigned int delay0 = 1;
 static unsigned long delay_jif;
 
 static void __cpuinit asmp_work_fn(struct work_struct *work)
@@ -121,9 +117,11 @@ static void __cpuinit asmp_work_fn(struct work_struct *work)
 	unsigned int nr_cpu_online;
 	unsigned int min_boost_freq = asmp_param.min_boost_freq;
 	u64 now;
-	
-	if (!asmp_param.enabled)
-		return;
+
+	if (asmp_param.delay != delay0) {
+		delay0 = asmp_param.delay;
+		delay_jif = msecs_to_jiffies(delay0);
+	}
 
 	/* get maximum possible freq for cpu0 and
 	   calculate up/down limits */
@@ -491,8 +489,6 @@ show_one(min_cpus, min_cpus);
 show_one(max_cpus, max_cpus);
 show_one(cpufreq_up, cpufreq_up);
 show_one(cpufreq_down, cpufreq_down);
-show_one(cycle_up, cycle_up);
-show_one(cycle_down, cycle_down);
 
 #define store_one(file_name, object)					\
 static ssize_t store_##file_name					\
@@ -515,8 +511,6 @@ store_one(min_cpus, min_cpus);
 store_one(max_cpus, max_cpus);
 store_one(cpufreq_up, cpufreq_up);
 store_one(cpufreq_down, cpufreq_down);
-store_one(cycle_up, cycle_up);
-store_one(cycle_down, cycle_down);
 
 static ssize_t show_boost_lock_duration(struct device *dev,
 				        struct device_attribute
@@ -601,8 +595,6 @@ static struct attribute *asmp_attributes[] = {
 	&max_cpus.attr,
 	&cpufreq_up.attr,
 	&cpufreq_down.attr,
-	&cycle_up.attr,
-	&cycle_down.attr,
 	&dev_attr_boost_lock_duration.attr,
 	&dev_attr_cpus_boosted.attr,
 	&dev_attr_min_boost_freq.attr,
