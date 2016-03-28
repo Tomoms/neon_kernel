@@ -1052,7 +1052,7 @@ static int cpufreq_add_dev(struct device *dev, struct subsys_interface *sif)
 		goto err_unlock_policy;
 	}
 
-	/* related cpus should atleast have policy->cpus */
+	/* related cpus should at least have policy->cpus */
 	cpumask_or(policy->related_cpus, policy->related_cpus, policy->cpus);
 
 	/*
@@ -1586,11 +1586,9 @@ int cpufreq_unregister_notifier(struct notifier_block *nb, unsigned int list)
 }
 EXPORT_SYMBOL(cpufreq_unregister_notifier);
 
-
 /*********************************************************************
  *                              GOVERNORS                            *
  *********************************************************************/
-
 
 int __cpufreq_driver_target(struct cpufreq_policy *policy,
 			    unsigned int target_freq,
@@ -2106,7 +2104,6 @@ static int __init cpufreq_core_init(void)
 	cpufreq_kset = kset_create_and_add("kset", NULL, cpufreq_global_kobject);
 	BUG_ON(!cpufreq_kset);
 	cpufreq_global_kobject->kset = cpufreq_kset;
-
 	register_syscore_ops(&cpufreq_syscore_ops);
 
 	return 0;
