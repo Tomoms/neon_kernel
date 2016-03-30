@@ -120,7 +120,7 @@ void irq_work_run(void)
 	barrier();
 
 	this_list = &__get_cpu_var(irq_work_list);
-	if (llist_empty(this_list))
+	if (llist_empty_relaxed(this_list))
 		return;
 
 	BUG_ON(!in_irq());

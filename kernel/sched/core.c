@@ -2485,7 +2485,8 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 	 * If the owning (remote) cpu is still in the middle of schedule() with
 	 * this task as prev, wait until its done referencing the task.
 	 */
-	while (p->on_cpu) {
+	while (cpu_relaxed_read(&(p->on_cpu)))
+		cpu_read_relax();
 #ifdef __ARCH_WANT_INTERRUPTS_ON_CTXSW
 		/*
 		 * In case the architecture enables interrupts in
@@ -4988,7 +4989,7 @@ int idle_cpu(int cpu)
 		return 0;
 
 #ifdef CONFIG_SMP
-	if (!llist_empty(&rq->wake_list))
+	if (!llist_empty_relaxed(&rq->wake_list))
 		return 0;
 #endif
 
