@@ -54,6 +54,7 @@ static struct delayed_work asmp_work;
 static struct work_struct suspend_work, resume_work;
 static struct workqueue_struct *asmp_workq;
 static bool enabled_switch = ASMP_ENABLED;
+static DEFINE_PER_CPU(struct asmp_cpudata_t, asmp_cpudata);
 
 static struct asmp_param_struct {
 	unsigned int delay;
@@ -109,8 +110,7 @@ static void max_min_check(void)
 static unsigned int delay0 = 1;
 static unsigned long delay_jif;
 
-static void __cpuinit asmp_work_fn(struct work_struct *work)
-{
+static void __cpuinit asmp_work_fn (struct work_struct* work) {
 	unsigned int cpu = 0, slow_cpu = 0;
 	unsigned int rate, cpu0_rate, slow_rate = UINT_MAX, fast_rate;
 	unsigned int max_rate, up_rate, down_rate;
@@ -215,8 +215,7 @@ static void asmp_suspend(struct work_struct *work)
 	pr_info(ASMP_TAG"Screen -> Off. Suspended.\n");
 }
 
-static __ref void asmp_resume(struct work_struct *work)
-{
+static __ref void asmp_resume (struct work_struct* work) {
 	unsigned int cpu;
 
 	/* Fire up all CPUs */
@@ -347,14 +346,13 @@ static void asmp_power_resume(void)
 	queue_work(system_power_efficient_wq, &resume_work);
 }
 
-static int lcd_notifier_callback(struct notifier_block *this,
-				unsigned long event, void *data)
+static int state_notifier_callback(struct notifier_block* this, unsigned long event, void* data)
 {
 	switch (event) {
-	case LCD_EVENT_ON_START:
+	case STATE_NOTIFIER_ACTIVE:
 			asmp_power_resume();
 			break;
-	case LCD_EVENT_OFF_END:
+	case STATE_NOTIFIER_SUSPEND:
 			asmp_power_suspend();
 			break;
 	default:
@@ -476,7 +474,7 @@ __ATTR(_name, 0444, show_##_name, NULL)
 static struct global_attr _name =					\
 __ATTR(_name, 0644, show_##_name, store_##_name)
 
-struct kobject *asmp_kobject;
+struct kobject* asmp_kobject;
 
 #define show_one(file_name, object)					\
 static ssize_t show_##file_name						\
@@ -621,7 +619,7 @@ static ssize_t show_times_hotplugged(struct kobject *a,
 }
 define_one_global_ro(times_hotplugged);
 
-static struct attribute *asmp_stats_attributes[] = {
+static struct attribute* asmp_stats_attributes[] = {
 	&times_hotplugged.attr,
 	NULL
 };
@@ -656,8 +654,8 @@ static int __init asmp_init(void)
 	INIT_WORK(&suspend_work, asmp_suspend);
 	INIT_WORK(&resume_work, asmp_resume);
 
-	notif.notifier_call = lcd_notifier_callback;
-	if (lcd_register_client(&notif))
+	notif.notifier_call = state_notifier_callback;
+	if (state_register_client(&notif))
 		return -EINVAL;
 
 	asmp_kobject = kobject_create_and_add("autosmp", kernel_kobj);
