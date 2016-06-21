@@ -18,6 +18,8 @@ obj-$(CONFIG_CPU_FREQ_GOV_IMPULSE)   += cpufreq_impulse.o
 # CPU Input Boost
 obj-$(CONFIG_CPU_INPUT_BOOST)		+= cpu_input_boost.o
 
+obj-$(CONFIG_CPU_FREQ_GOV_COMMON)	+= cpufreq_governor.o
+
 # CPUfreq cross-arch helpers
 obj-$(CONFIG_CPU_FREQ_TABLE)		+= freq_table.o
 
