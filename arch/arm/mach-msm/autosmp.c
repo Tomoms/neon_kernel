@@ -28,8 +28,8 @@
 #include <linux/slab.h>
 #include <linux/hrtimer.h>
 #include <linux/input.h>
-#ifdef CONFIG_POWERSUSPEND
-#include <linux/powersuspend.h>
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
 #endif
 
 #define DEBUG 0
