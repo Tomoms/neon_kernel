@@ -495,8 +495,8 @@
 			regulator-max-microvolt = <1250000>;
 			qcom,headroom-voltage = <150000>;
 			qcom,retention-voltage = <580000>;
-			qcom,ldo-default-voltage = <750000>;
-			qcom,ldo-threshold-voltage = <850000>;
+			qcom,ldo-default-voltage = <675000>;
+			qcom,ldo-threshold-voltage = <775000>;
 			qcom,ldo-delta-voltage = <12500>;
 			qcom,cpu-num = <0>;
 		};
@@ -511,8 +511,8 @@
 			regulator-max-microvolt = <1250000>;
 			qcom,headroom-voltage = <150000>;
 			qcom,retention-voltage = <580000>;
-			qcom,ldo-default-voltage = <750000>;
-			qcom,ldo-threshold-voltage = <850000>;
+			qcom,ldo-default-voltage = <675000>;
+			qcom,ldo-threshold-voltage = <775000>;
 			qcom,ldo-delta-voltage = <12500>;
 			qcom,cpu-num = <1>;
 		};
@@ -527,8 +527,8 @@
 			regulator-max-microvolt = <1250000>;
 			qcom,headroom-voltage = <150000>;
 			qcom,retention-voltage = <580000>;
-			qcom,ldo-default-voltage = <750000>;
-			qcom,ldo-threshold-voltage = <850000>;
+			qcom,ldo-default-voltage = <675000>;
+			qcom,ldo-threshold-voltage = <775000>;
 			qcom,ldo-delta-voltage = <12500>;
 			qcom,cpu-num = <2>;
 		};
@@ -543,8 +543,8 @@
 			regulator-max-microvolt = <1250000>;
 			qcom,headroom-voltage = <150000>;
 			qcom,retention-voltage = <580000>;
-			qcom,ldo-default-voltage = <750000>;
-			qcom,ldo-threshold-voltage = <850000>;
+			qcom,ldo-default-voltage = <675000>;
+			qcom,ldo-threshold-voltage = <775000>;
 			qcom,ldo-delta-voltage = <12500>;
 			qcom,cpu-num = <3>;
 		};
