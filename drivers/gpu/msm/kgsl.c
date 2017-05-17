@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2017 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2008-2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -253,7 +253,7 @@ kgsl_mem_entry_create(void)
 {
 	struct kgsl_mem_entry *entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 
-	if (entry)
+	if (entry) {
 		kref_init(&entry->refcount);
 		/* put this ref in the caller functions after init */
 		kref_get(&entry->refcount);
