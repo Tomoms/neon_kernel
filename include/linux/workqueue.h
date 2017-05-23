@@ -627,6 +627,15 @@ static inline bool __deprecated flush_delayed_work_sync(struct delayed_work *dwo
 	return flush_delayed_work(dwork);
 }
 
+/**
+ * delayed_work_busy - See work_busy()
+ * @dwork: the delayed work to be tested
+ */
+static inline unsigned int delayed_work_busy(struct delayed_work *dwork)
+{
+	return work_busy(&dwork->work);
+}
+
 #ifndef CONFIG_SMP
 static inline long work_on_cpu(int cpu, long (*fn)(void *), void *arg)
 {
