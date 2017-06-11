@@ -57,6 +57,7 @@ config X86
 	select HAVE_KERNEL_LZMA
 	select HAVE_KERNEL_XZ
 	select HAVE_KERNEL_LZO
+	select HAVE_KERNEL_LZ4
 	select HAVE_HW_BREAKPOINT
 	select HAVE_MIXED_BREAKPOINTS_REGS
 	select PERF_EVENTS
@@ -437,7 +438,7 @@ config X86_MDFLD
 	select MFD_INTEL_MSIC
 	---help---
 	  Medfield is Intel's Low Power Intel Architecture (LPIA) based Moblin
-	  Internet Device(MID) platform. 
+	  Internet Device(MID) platform.
 	  Unlike standard x86 PCs, Medfield does not have many legacy devices
 	  nor standard legacy replacement devices/features. e.g. Medfield does
 	  not contain i8259, i8254, HPET, legacy BIOS, most of the io ports.
