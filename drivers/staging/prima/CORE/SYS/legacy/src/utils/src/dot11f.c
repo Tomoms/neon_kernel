@@ -20733,6 +20733,10 @@ static tANI_U32 UnpackCore(tpAniSirGlobal pCtx,
                 }
 
         countOffset = ( (0 != pIe->arraybound) * ( *(tANI_U16* )(pFrm + pIe->countOffset)));
+            if (0 != pIe->arraybound && countOffset >= pIe->arraybound) {
+              status |= DOT11F_DUPLICATE_IE;
+              goto skip_dup_ie;
+            }
                 switch (pIe->sig)
                 {
                 case SigIeAPName:
@@ -21207,6 +21211,7 @@ static tANI_U32 UnpackCore(tpAniSirGlobal pCtx,
             status |= DOT11F_UNKNOWN_IES;
         }
 
+        skip_dup_ie:
         pBufRemaining += len;
 
          if (len > nBufRemaining)
