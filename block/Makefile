@@ -1,7 +1,6 @@
 #
 # Makefile for the kernel block layer
 #
-ccflags-y := -std=gnu11
 
 obj-$(CONFIG_BLOCK) := elevator.o blk-core.o blk-tag.o blk-sysfs.o \
 			blk-flush.o blk-settings.o blk-ioc.o blk-map.o \
@@ -19,7 +18,6 @@ obj-$(CONFIG_IOSCHED_ROW)	+= row-iosched.o
 obj-$(CONFIG_IOSCHED_CFQ)	+= cfq-iosched.o
 obj-$(CONFIG_IOSCHED_TEST)	+= test-iosched.o
 obj-$(CONFIG_IOSCHED_SWITCHER) += iosched_switcher.o
-obj-$(CONFIG_IOSCHED_MAPLE)	+= maple-iosched.o
 
 obj-$(CONFIG_BLOCK_COMPAT)	+= compat_ioctl.o
 obj-$(CONFIG_BLK_DEV_INTEGRITY)	+= blk-integrity.o
