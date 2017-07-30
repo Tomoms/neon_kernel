@@ -28,7 +28,7 @@ FONTC	= $(srctree)/drivers/video/console/font_acorn_8x8.c
 
 # string library code (-Os is enforced to keep it much smaller)
 OBJS		+= string.o
-CFLAGS_string.o	:= -Os
+CFLAGS_string.o	:= -Os -fno-tree-loop-distribution -fira-loop-pressure -fsched-pressure
 
 #
 # Architecture dependencies
