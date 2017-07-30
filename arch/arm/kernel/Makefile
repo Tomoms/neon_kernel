@@ -62,7 +62,7 @@ obj-$(CONFIG_HAVE_TCM)		+= tcm.o
 obj-$(CONFIG_OF)		+= devtree.o
 obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
 obj-$(CONFIG_SWP_EMULATE)	+= swp_emulate.o
-CFLAGS_swp_emulate.o		:= -Wa,-march=armv7-a
+CFLAGS_swp_emulate.o		:= -mcpu=cortex-a15 -mtune=cortex-a15 -mfpu=neon-vfpv4
 obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
 obj-$(CONFIG_GENERIC_TIME_VSYSCALL)	+= update_vsyscall_arm.o
 
