@@ -36,6 +36,7 @@ modules.builtin
 dtbToolCM
 patch*
 *.rej
+arch/arm/boot/dtb
 
 #
 # Top-level generic files
