@@ -119,6 +119,7 @@ static int sdio_irq_thread(void *_host)
 		ret = __mmc_claim_host(host, &host->sdio_irq_thread_abort);
 		if (ret)
 			break;
+
 		ws = false;
 		/*
 		 * prevent suspend if it has started when scheduled;
