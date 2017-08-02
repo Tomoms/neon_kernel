@@ -571,22 +571,6 @@ const struct file_operations msm_cpufreq_fops = {
 };
 #endif
 
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-bool is_used_by_scaling(unsigned int freq)
-{
-	unsigned int i, cpu_freq;
-
-	for (i = 0; dts_freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
-		cpu_freq = dts_freq_table[i].frequency;
-		if (cpu_freq == CPUFREQ_ENTRY_INVALID)
-			continue;
-		if (freq == cpu_freq)
-			return true;
-	}
-	return false;
-}
-#endif
-
 static int __init msm_cpufreq_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
