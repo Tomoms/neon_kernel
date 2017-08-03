@@ -190,7 +190,7 @@ struct kioctx {
 
 	spinlock_t		ctx_lock;
 
-	atomic_t		reqs_active;
+	int			reqs_active;
 	struct list_head	active_reqs;	/* used for cancellation */
 	struct list_head	run_list;	/* used for kicked reqs */
 
@@ -200,7 +200,8 @@ struct kioctx {
 	struct aio_ring_info	ring_info;
 
 	struct delayed_work	wq;
-	struct work_struct	free_work;
+
+	struct rcu_head		rcu_head;
 };
 
 /* prototypes */
