@@ -161,10 +161,15 @@ struct aio_ring {
 	struct io_event		io_events[0];
 }; /* 128 bytes + ring size */
 
-#define aio_ring_avail(info, ring)	(((ring)->head + (info)->nr - 1 - (ring)->tail) % (info)->nr)
+static inline unsigned aio_ring_avail(struct aio_ring_info *info)
+{
+	return (info->ring->head + info->nr - 1 - info->ring->tail) %
+		info->nr;
+}
 
 #define AIO_RING_PAGES	8
 struct aio_ring_info {
+	struct aio_ring		*ring;
 	unsigned long		mmap_base;
 	unsigned long		mmap_size;
 
