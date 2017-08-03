@@ -161,12 +161,6 @@ struct aio_ring {
 	struct io_event		io_events[0];
 }; /* 128 bytes + ring size */
 
-static inline unsigned aio_ring_avail(struct aio_ring_info *info)
-{
-	return (info->ring->head + info->nr - 1 - info->ring->tail) %
-		info->nr;
-}
-
 #define AIO_RING_PAGES	8
 struct aio_ring_info {
 	struct aio_ring		*ring;
@@ -181,6 +175,12 @@ struct aio_ring_info {
 
 	struct page		*internal_pages[AIO_RING_PAGES];
 };
+
+static inline unsigned aio_ring_avail(struct aio_ring_info *info)
+{
+	return (info->ring->head + info->nr - 1 - info->ring->tail) %
+		info->nr;
+}
 
 struct kioctx {
 	atomic_t		users;
