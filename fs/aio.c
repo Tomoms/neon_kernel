@@ -240,29 +240,6 @@ static inline void put_ioctx(struct kioctx *kioctx)
 		__put_ioctx(kioctx);
 }
 
-static int kiocb_cancel(struct kioctx *ctx, struct kiocb *kiocb,
-			struct io_event *res)
-{
-	int (*cancel)(struct kiocb *, struct io_event *);
-	int ret = -EINVAL;
-
-	cancel = kiocb->ki_cancel;
-	kiocbSetCancelled(kiocb);
-	if (cancel) {
-		kiocb->ki_users++;
-		spin_unlock_irq(&ctx->ctx_lock);
-
-		memset(res, 0, sizeof(*res));
-		res->obj = (u64) kiocb->ki_obj.user;
-		res->data = kiocb->ki_user_data;
-		ret = cancel(kiocb, res);
-
-		spin_lock_irq(&ctx->ctx_lock);
-	}
-
-	return ret;
-}
-
 /* ioctx_alloc
  *	Allocates and initializes an ioctx.  Returns an ERR_PTR if it failed.
  */
@@ -338,6 +315,7 @@ out_freectx:
  */
 static void kill_ctx(struct kioctx *ctx)
 {
+	int (*cancel)(struct kiocb *, struct io_event *);
 	struct task_struct *tsk = current;
 	DECLARE_WAITQUEUE(wait, tsk);
 	struct io_event res;
@@ -348,8 +326,14 @@ static void kill_ctx(struct kioctx *ctx)
 		struct list_head *pos = ctx->active_reqs.next;
 		struct kiocb *iocb = list_kiocb(pos);
 		list_del_init(&iocb->ki_list);
-
-		kiocb_cancel(ctx, iocb, &res);
+		cancel = iocb->ki_cancel;
+		kiocbSetCancelled(iocb);
+		if (cancel) {
+			iocb->ki_users++;
+			spin_unlock_irq(&ctx->ctx_lock);
+			cancel(iocb, &res);
+			spin_lock_irq(&ctx->ctx_lock);
+		}
 	}
 
 	if (!ctx->reqs_active)
@@ -1792,7 +1776,7 @@ static struct kiocb *lookup_kiocb(struct kioctx *ctx, struct iocb __user *iocb,
 SYSCALL_DEFINE3(io_cancel, aio_context_t, ctx_id, struct iocb __user *, iocb,
 		struct io_event __user *, result)
 {
-	struct io_event res;
+	int (*cancel)(struct kiocb *iocb, struct io_event *res);
 	struct kioctx *ctx;
 	struct kiocb *kiocb;
 	u32 key;
@@ -1807,22 +1791,32 @@ SYSCALL_DEFINE3(io_cancel, aio_context_t, ctx_id, struct iocb __user *, iocb,
 		return -EINVAL;
 
 	spin_lock_irq(&ctx->ctx_lock);
-
+	ret = -EAGAIN;
 	kiocb = lookup_kiocb(ctx, iocb, key);
-	if (kiocb)
-		ret = kiocb_cancel(ctx, kiocb, &res);
-	else
-		ret = -EAGAIN;
-
+	if (kiocb && kiocb->ki_cancel) {
+		cancel = kiocb->ki_cancel;
+		kiocb->ki_users ++;
+		kiocbSetCancelled(kiocb);
+	} else
+		cancel = NULL;
 	spin_unlock_irq(&ctx->ctx_lock);
 
-	if (!ret) {
-		/* Cancellation succeeded -- copy the result
-		 * into the user's buffer.
-		 */
-		if (copy_to_user(result, &res, sizeof(res)))
-			ret = -EFAULT;
-	}
+	if (NULL != cancel) {
+		struct io_event tmp;
+		pr_debug("calling cancel\n");
+		memset(&tmp, 0, sizeof(tmp));
+		tmp.obj = (u64)(unsigned long)kiocb->ki_obj.user;
+		tmp.data = kiocb->ki_user_data;
+		ret = cancel(kiocb, &tmp);
+		if (!ret) {
+			/* Cancellation succeeded -- copy the result
+			 * into the user's buffer.
+			 */
+			if (copy_to_user(result, &tmp, sizeof(tmp)))
+				ret = -EFAULT;
+		}
+	} else
+		ret = -EINVAL;
 
 	put_ioctx(ctx);
 
