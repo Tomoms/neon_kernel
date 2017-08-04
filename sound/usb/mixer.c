@@ -297,7 +297,6 @@ static int get_ctl_value_v1(struct usb_mixer_elem_info *cval, int request,
 		return -EIO;
 
 	down_read(&chip->shutdown_rwsem);
-
 	while (timeout-- > 0) {
 		if (chip->shutdown)
 			break;
@@ -469,9 +468,7 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 	err = snd_usb_autoresume(chip);
 	if (err < 0)
 		return -EIO;
-
 	down_read(&chip->shutdown_rwsem);
-
 	while (timeout-- > 0) {
 		if (chip->shutdown)
 			break;
@@ -484,7 +481,6 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 			goto out;
 		}
 	}
-
 	usb_audio_dbg(chip, "cannot set ctl value: req = %#x, wValue = %#x, wIndex = %#x, type = %d, data = %#x/%#x\n",
 		      request, validx, idx, cval->val_type, buf[0], buf[1]);
 	err = -EINVAL;

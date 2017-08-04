@@ -787,7 +787,6 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
 		ret = -ENODEV;
 		goto unlock;
 	}
-
 	if (snd_BUG_ON(!subs->data_endpoint)) {
 		ret = -EIO;
 		goto unlock;
@@ -837,7 +836,6 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
 
  unlock:
 	up_read(&subs->stream->chip->shutdown_rwsem);
-
 	return ret;
 }
 
