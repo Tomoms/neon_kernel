@@ -727,17 +727,8 @@ static int snd_usb_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
 	down_read(&subs->stream->chip->shutdown_rwsem);
 	if (subs->stream->chip->shutdown)
-=======
-	changed = subs->cur_audiofmt != fmt ||
-		subs->period_bytes != params_period_bytes(hw_params) ||
-		subs->cur_rate != rate;
-
-	down_read(&subs->stream->chip->shutdown_rwsem);
-	if (subs->stream->chip->shutdown) {
->>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 		ret = -ENODEV;
 	else
 		ret = set_format(subs, fmt);
@@ -749,13 +740,7 @@ static int snd_usb_hw_params(struct snd_pcm_substream *substream,
 	subs->altset_idx = fmt->altset_idx;
 	subs->need_setup_ep = true;
 
-<<<<<<< HEAD
 	return 0;
-=======
-unlock:
-	up_read(&subs->stream->chip->shutdown_rwsem);
-	return ret;
->>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 }
 
 /*
@@ -771,14 +756,10 @@ static int snd_usb_hw_free(struct snd_pcm_substream *substream)
 	subs->cur_rate = 0;
 	subs->period_bytes = 0;
 	down_read(&subs->stream->chip->shutdown_rwsem);
-<<<<<<< HEAD
 	if (!subs->stream->chip->shutdown) {
 		stop_endpoints(subs, true);
 		deactivate_endpoints(subs);
 	}
-=======
-	snd_usb_release_substream_urbs(subs, 0);
->>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	up_read(&subs->stream->chip->shutdown_rwsem);
 	return snd_pcm_lib_free_vmalloc_buffer(substream);
 }
@@ -856,10 +837,7 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
 
  unlock:
 	up_read(&subs->stream->chip->shutdown_rwsem);
-<<<<<<< HEAD
 
-=======
->>>>>>> 49e44e317fdb... ALSA: usb-audio: Use rwsem for disconnect protection
 	return ret;
 }
 
