@@ -611,14 +611,9 @@ static int snd_usb_fasttrackpro_boot_quirk(struct usb_device *dev)
 		 */
 		err = usb_driver_set_configuration(dev, 2);
 		if (err < 0)
-<<<<<<< HEAD
 			dev_dbg(&dev->dev,
 				"error usb_driver_set_configuration: %d\n",
 				err);
-=======
-			snd_printdd("error usb_driver_set_configuration: %d\n",
-				    err);
->>>>>>> ee415da55384... ALSA: usb - fix race in creation of M-Audio Fast track pro driver
 		/* Always return an error, so that we stop creating a device
 		   that will just be destroyed and recreated with a new
 		   configuration */
