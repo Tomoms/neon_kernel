@@ -739,7 +739,6 @@ invalid_key:
 int smp_conn_security(struct hci_conn *hcon, __u8 sec_level)
 {
 	struct l2cap_conn *conn = hcon->l2cap_data;
-	struct smp_chan *smp = conn->smp_chan;
 	__u8 authreq;
 
 	BT_DBG("conn %p hcon %p %d req: %d",
@@ -1053,7 +1052,7 @@ int smp_link_encrypt_cmplt(struct l2cap_conn *conn, u8 status, u8 encrypt)
 
 	/* Fall back to Pairing request if failed a Link Security request */
 	else if (hcon->sec_req  && (status || !encrypt))
-		smp_conn_security(conn, hcon->pending_sec_level);
+		smp_conn_security(hcon, hcon->pending_sec_level);
 
 	hci_conn_put(hcon);
 
