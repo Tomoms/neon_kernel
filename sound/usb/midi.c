@@ -1053,11 +1053,7 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 	down_read(&umidi->disc_rwsem);
 	if (umidi->disconnected) {
 		up_read(&umidi->disc_rwsem);
-<<<<<<< HEAD
 		return open ? -ENODEV : 0;
-=======
-		return;
->>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
 	}
 
 	mutex_lock(&umidi->mutex);
@@ -1091,10 +1087,7 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 	}
 	mutex_unlock(&umidi->mutex);
 	up_read(&umidi->disc_rwsem);
-<<<<<<< HEAD
 	return 0;
-=======
->>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
 }
 
 static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
@@ -1115,19 +1108,6 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 		return -ENXIO;
 	}
 
-<<<<<<< HEAD
-=======
-	down_read(&umidi->disc_rwsem);
-	if (umidi->disconnected) {
-		up_read(&umidi->disc_rwsem);
-		return -ENODEV;
-	}
-	err = usb_autopm_get_interface(umidi->iface);
-	port->autopm_reference = err >= 0;
-	up_read(&umidi->disc_rwsem);
-	if (err < 0 && err != -EACCES)
-		return -EIO;
->>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
 	substream->runtime->private_data = port;
 	port->state = STATE_UNKNOWN;
 	return substream_open(substream, 0, 1);
@@ -1135,19 +1115,7 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 
 static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
 {
-<<<<<<< HEAD
 	return substream_open(substream, 0, 0);
-=======
-	struct snd_usb_midi* umidi = substream->rmidi->private_data;
-	struct usbmidi_out_port *port = substream->runtime->private_data;
-
-	substream_open(substream, 0);
-	down_read(&umidi->disc_rwsem);
-	if (!umidi->disconnected && port->autopm_reference)
-		usb_autopm_put_interface(umidi->iface);
-	up_read(&umidi->disc_rwsem);
-	return 0;
->>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
 }
 
 static void snd_usbmidi_output_trigger(struct snd_rawmidi_substream *substream,
