@@ -126,10 +126,6 @@ struct snd_usb_midi {
 		struct snd_usb_midi_in_endpoint *in;
 	} endpoints[MIDI_MAX_ENDPOINTS];
 	unsigned long input_triggered;
-<<<<<<< HEAD
-=======
-	bool autopm_reference;
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 	unsigned int opened[2];
 	unsigned char disconnected;
 	unsigned char input_running;
@@ -1053,42 +1049,24 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 {
 	struct snd_usb_midi *umidi = substream->rmidi->private_data;
 	struct snd_kcontrol *ctl;
-	int err;
 
 	down_read(&umidi->disc_rwsem);
 	if (umidi->disconnected) {
 		up_read(&umidi->disc_rwsem);
 <<<<<<< HEAD
-<<<<<<< HEAD
 		return open ? -ENODEV : 0;
 =======
 		return;
 >>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
-=======
-		return open ? -ENODEV : 0;
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 	}
 
 	mutex_lock(&umidi->mutex);
 	if (open) {
 		if (!umidi->opened[0] && !umidi->opened[1]) {
-<<<<<<< HEAD
 			if (umidi->roland_load_ctl) {
 				ctl = umidi->roland_load_ctl;
 				ctl->vd[0].access |=
 					SNDRV_CTL_ELEM_ACCESS_INACTIVE;
-=======
-			err = usb_autopm_get_interface(umidi->iface);
-			umidi->autopm_reference = err >= 0;
-			if (err < 0 && err != -EACCES) {
-				mutex_unlock(&umidi->mutex);
-				up_read(&umidi->disc_rwsem);
-				return -EIO;
-			}
-			if (umidi->roland_load_ctl) {
-				ctl = umidi->roland_load_ctl;
-				ctl->vd[0].access |= SNDRV_CTL_ELEM_ACCESS_INACTIVE;
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 				snd_ctl_notify(umidi->card,
 				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
 				update_roland_altsetting(umidi);
@@ -1104,32 +1082,19 @@ static int substream_open(struct snd_rawmidi_substream *substream, int dir,
 		if (!umidi->opened[0] && !umidi->opened[1]) {
 			if (umidi->roland_load_ctl) {
 				ctl = umidi->roland_load_ctl;
-<<<<<<< HEAD
 				ctl->vd[0].access &=
 					~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
 				snd_ctl_notify(umidi->card,
 				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
 			}
-=======
-				ctl->vd[0].access &= ~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
-				snd_ctl_notify(umidi->card,
-				       SNDRV_CTL_EVENT_MASK_INFO, &ctl->id);
-			}
-			if (umidi->autopm_reference)
-				usb_autopm_put_interface(umidi->iface);
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 		}
 	}
 	mutex_unlock(&umidi->mutex);
 	up_read(&umidi->disc_rwsem);
 <<<<<<< HEAD
-<<<<<<< HEAD
 	return 0;
 =======
 >>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
-=======
-	return 0;
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 }
 
 static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
@@ -1151,7 +1116,6 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 	}
 
 <<<<<<< HEAD
-<<<<<<< HEAD
 =======
 	down_read(&umidi->disc_rwsem);
 	if (umidi->disconnected) {
@@ -1164,8 +1128,6 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 	if (err < 0 && err != -EACCES)
 		return -EIO;
 >>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
-=======
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 	substream->runtime->private_data = port;
 	port->state = STATE_UNKNOWN;
 	return substream_open(substream, 0, 1);
@@ -1173,7 +1135,6 @@ static int snd_usbmidi_output_open(struct snd_rawmidi_substream *substream)
 
 static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
 {
-<<<<<<< HEAD
 <<<<<<< HEAD
 	return substream_open(substream, 0, 0);
 =======
@@ -1187,9 +1148,6 @@ static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
 	up_read(&umidi->disc_rwsem);
 	return 0;
 >>>>>>> 929cfe920d27... ALSA: usb-audio: Avoid autopm calls after disconnection
-=======
-	return substream_open(substream, 0, 0);
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 }
 
 static void snd_usbmidi_output_trigger(struct snd_rawmidi_substream *substream,
@@ -2266,7 +2224,6 @@ void snd_usbmidi_input_start(struct list_head *p)
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
 		snd_usbmidi_input_start_ep(umidi->endpoints[i].in);
 	umidi->input_running = 1;
-<<<<<<< HEAD
 }
 
 /*
@@ -2294,8 +2251,6 @@ void snd_usbmidi_resume(struct list_head *p)
 	mutex_lock(&umidi->mutex);
 	snd_usbmidi_input_start(p);
 	mutex_unlock(&umidi->mutex);
-=======
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 }
 EXPORT_SYMBOL(snd_usbmidi_resume);
 
@@ -2437,11 +2392,8 @@ int snd_usbmidi_create(struct snd_card *card,
 		return err;
 	}
 
-<<<<<<< HEAD
 	usb_autopm_get_interface_no_resume(umidi->iface);
 
-=======
->>>>>>> 740ccbaa5711... ALSA: usb-audio: Fix missing autopm for MIDI input
 	list_add_tail(&umidi->list, midi_list);
 	return 0;
 }
