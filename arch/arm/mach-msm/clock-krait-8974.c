@@ -22,10 +22,6 @@
 #include <linux/of.h>
 #include <linux/cpumask.h>
 
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-#include <linux/cpufreq.h>
-#endif
-
 #include <asm/cputype.h>
 
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
@@ -673,7 +669,7 @@ ssize_t store_UV_mV_table(struct cpufreq_policy *policy, char *buf,
 			return -EINVAL;
 
 		/* bounds check */
-		val = min( max((unsigned int)val, (unsigned int)CPU_VDD_MIN),
+		val = min(max((unsigned int)val, (unsigned int)CPU_VDD_MIN),
 			(unsigned int)CPU_VDD_MAX);
 
 		/* apply it to all available cores */
