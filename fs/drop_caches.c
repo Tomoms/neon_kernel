@@ -11,7 +11,7 @@
 #include "internal.h"
 
 /* A global variable is a bit ugly, but it keeps the code simple */
-int sysctl_drop_caches;
+int sysctl_drop_caches = 3;
 
 static void drop_pagecache_sb(struct super_block *sb, void *unused)
 {
