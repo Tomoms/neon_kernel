@@ -38,6 +38,7 @@
 #define ASMP_ENABLED			false
 #define DEFAULT_BOOST_LOCK_DUR		800 * 1000L
 #define DEFAULT_NR_CPUS_BOOSTED		2
+#define DEFAULT_MAX_CPUS_ONLINE_SUSP	3
 #define DEFAULT_UPDATE_RATE		30
 #define MIN_INPUT_INTERVAL		150 * 1000L
 #define DEFAULT_MIN_BOOST_FREQ		1026000
@@ -56,6 +57,8 @@ static bool enabled_switch = ASMP_ENABLED;
 static struct asmp_param_struct {
 	unsigned int delay;
 	unsigned int max_cpus;
+	unsigned int max_cpus_online_res;
+	unsigned int max_cpus_online_susp;
 	unsigned int min_cpus;
 	unsigned int cpufreq_up;
 	unsigned int cpufreq_down;
@@ -71,6 +74,8 @@ static struct asmp_param_struct {
 } asmp_param = {
 	.delay = DEFAULT_UPDATE_RATE,
 	.max_cpus = NR_CPUS,
+	.max_cpus_online_res = NR_CPUS,
+	.max_cpus_online_susp = DEFAULT_MAX_CPUS_ONLINE_SUSP,
 	.min_cpus = 1,
 	.cpufreq_up = 95,
 	.cpufreq_down = 80,
@@ -207,12 +212,16 @@ static void asmp_suspend(void)
 		if (cpu != 0 && cpu_online(cpu))
 			cpu_down(cpu);
 
+	asmp_param.max_cpus = asmp_param.max_cpus_online_susp;
+
 	pr_info(ASMP_TAG"Screen -> Off. Suspended.\n");
 }
 
 static void __ref asmp_resume(void)
 {
 	unsigned int cpu;
+
+	asmp_param.max_cpus = asmp_param.max_cpus_online_res;
 
 	/* Fire up all CPUs */
 	for_each_possible_cpu(cpu)
@@ -457,7 +466,8 @@ static ssize_t show_##file_name						\
 }
 show_one(delay, delay);
 show_one(min_cpus, min_cpus);
-show_one(max_cpus, max_cpus);
+show_one(max_cpus_online_res, max_cpus_online_res);
+show_one(max_cpus_online_susp, max_cpus_online_susp);
 show_one(cpufreq_up, cpufreq_up);
 show_one(cpufreq_down, cpufreq_down);
 show_one(cycle_up, cycle_up);
@@ -481,7 +491,8 @@ static ssize_t store_##file_name					\
 define_one_global_rw(file_name);
 store_one(delay, delay);
 store_one(min_cpus, min_cpus);
-store_one(max_cpus, max_cpus);
+store_one(max_cpus_online_res, max_cpus_online_res);
+store_one(max_cpus_online_susp, max_cpus_online_susp);
 store_one(cpufreq_up, cpufreq_up);
 store_one(cpufreq_down, cpufreq_down);
 store_one(cycle_up, cycle_up);
@@ -567,7 +578,8 @@ static DEVICE_ATTR(min_boost_freq, 644, show_min_boost_freq,
 static struct attribute *asmp_attributes[] = {
 	&delay.attr,
 	&min_cpus.attr,
-	&max_cpus.attr,
+	&max_cpus_online_res.attr,
+	&max_cpus_online_susp.attr,
 	&cpufreq_up.attr,
 	&cpufreq_down.attr,
 	&cycle_up.attr,
