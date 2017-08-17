@@ -1546,12 +1546,8 @@ void disk_flush_events(struct gendisk *disk, unsigned int mask)
 	ev->clearing |= mask;
 	if (!ev->block) {
 		cancel_delayed_work(&ev->dwork);
-<<<<<<< HEAD
 		queue_delayed_work(system_freezable_power_efficient_wq,
 				&ev->dwork, 0);
-=======
-		queue_delayed_work(system_freezable_power_efficient_wq, &ev->dwork, 0);
->>>>>>> 314dd45283fd... Backport https://lists.linuxfoundation.org/pipermail/ltsi-dev/2013-December/002683.html from Kernel 3.10
 	}
 	spin_unlock_irq(&ev->lock);
 }
