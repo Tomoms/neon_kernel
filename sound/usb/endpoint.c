@@ -515,25 +515,8 @@ static int wait_clear_urbs(struct snd_usb_endpoint *ep)
  */
 void snd_usb_endpoint_sync_pending_stop(struct snd_usb_endpoint *ep)
 {
-<<<<<<< HEAD
 	if (ep && test_bit(EP_FLAG_STOPPING, &ep->flags))
 		wait_clear_urbs(ep);
-=======
-	int i;
-
-	/* stop urbs (to be sure) */
-	deactivate_urbs(subs, force, 1);
-	wait_clear_urbs(subs);
-
-	for (i = 0; i < MAX_URBS; i++)
-		release_urb_ctx(&subs->dataurb[i]);
-	for (i = 0; i < SYNC_URBS; i++)
-		release_urb_ctx(&subs->syncurb[i]);
-	usb_free_coherent(subs->dev, SYNC_URBS * 4,
-			subs->syncbuf, subs->sync_dma);
-	subs->syncbuf = NULL;
-	subs->nurbs = 0;
->>>>>>> 115b96e58609... ALSA: usb-audio: Fix regression by disconnection-race-fix patch
 }
 
 /*
