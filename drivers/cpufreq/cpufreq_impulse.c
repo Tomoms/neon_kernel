@@ -222,8 +222,9 @@ static unsigned int freq_to_above_hispeed_delay(unsigned int freq)
 	spin_lock_irqsave(&above_hispeed_delay_lock, flags);
 
 	for (i = 0; i < nabove_hispeed_delay - 1 &&
-			freq >= above_hispeed_delay[i+1]; i += 2);
+			freq >= above_hispeed_delay[i+1]; i += 2) {
 		ret = above_hispeed_delay[i];
+	}
 
 	spin_unlock_irqrestore(&above_hispeed_delay_lock, flags);
 
@@ -239,8 +240,9 @@ static unsigned int freq_to_targetload(unsigned int freq)
 	spin_lock_irqsave(&target_loads_lock, flags);
 
 	for (i = 0; i < ntarget_loads - 1 &&
-			freq >= target_loads[i+1]; i += 2);
+			freq >= target_loads[i+1]; i += 2) {
 		ret = target_loads[i];
+	}
 
 	spin_unlock_irqrestore(&target_loads_lock, flags);
 

@@ -319,7 +319,6 @@ static const DECLARE_TLV_DB_SCALE(digital_gain, 0, 1, 0);
 static const DECLARE_TLV_DB_SCALE(line_gain, 0, 7, 1);
 static const DECLARE_TLV_DB_SCALE(analog_gain, 0, 25, 1);
 static struct snd_soc_dai_driver taiko_dai[];
-static const DECLARE_TLV_DB_SCALE(aux_pga_gain, 0, 2, 0);
 
 /* Codec supports 2 IIR filters */
 enum {
@@ -1168,17 +1167,12 @@ static int taiko_config_compander(struct snd_soc_dapm_widget *w,
 
 
 
-static const char *const taiko_anc_func_text[] = {"OFF", "ON"};
+static const char * taiko_anc_func_text[] = {"OFF", "ON"};
 static const struct soc_enum taiko_anc_func_enum =
 		SOC_ENUM_SINGLE_EXT(2, taiko_anc_func_text);
 
-static const char *const tabla_ear_pa_gain_text[] = {"POS_6_DB", "POS_2_DB"};
-static const struct soc_enum tabla_ear_pa_gain_enum[] = {
-		SOC_ENUM_SINGLE_EXT(2, tabla_ear_pa_gain_text),
-};
-
 /*cut of frequency for high pass filter*/
-static const char * const cf_text[] = {
+static const char * cf_text[] = {
 	"MIN_3DB_4Hz", "MIN_3DB_75Hz", "MIN_3DB_150Hz"
 };
 
@@ -1243,7 +1237,7 @@ static const struct soc_enum class_h_dsm_enum =
 static const struct snd_kcontrol_new class_h_dsm_mux =
 	SOC_DAPM_ENUM("CLASS_H_DSM MUX Mux", class_h_dsm_enum);
 
-static const char * const rx1_interpolator_text[] = {
+static const char * rx1_interpolator_text[] = {
 	"ZERO", "RX1 MIX2"
 };
 static const struct soc_enum rx1_interpolator_enum =
@@ -1252,7 +1246,7 @@ static const struct soc_enum rx1_interpolator_enum =
 static const struct snd_kcontrol_new rx1_interpolator =
 	SOC_DAPM_ENUM("RX1 INTERP Mux", rx1_interpolator_enum);
 
-static const char * const rx2_interpolator_text[] = {
+static const char * rx2_interpolator_text[] = {
 	"ZERO", "RX2 MIX2"
 };
 static const struct soc_enum rx2_interpolator_enum =
@@ -1261,7 +1255,7 @@ static const struct soc_enum rx2_interpolator_enum =
 static const struct snd_kcontrol_new rx2_interpolator =
 	SOC_DAPM_ENUM("RX2 INTERP Mux", rx2_interpolator_enum);
 
-static const char *const taiko_conn_mad_text[] = {
+static const char * taiko_conn_mad_text[] = {
 	"ADC_MB", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5", "ADC6", "NOTUSED1",
 	"DMIC1", "DMIC2", "DMIC3", "DMIC4", "DMIC5", "DMIC6", "NOTUSED2",
 	"NOTUSED3"};
