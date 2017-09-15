@@ -715,6 +715,21 @@ is_within_range(int value, int left, int right)
 	return 0;
 }
 
+static int mcu_en_gpio = 0;
+void mcu_en_gpio_set(int value)
+{
+	if (value) {
+		if (gpio_is_valid(mcu_en_gpio))
+			gpio_set_value(mcu_en_gpio, 0);///1);
+	} else {
+		if (gpio_is_valid(mcu_en_gpio)) {
+			gpio_set_value(mcu_en_gpio, 1);
+			usleep_range(10000, 10000);
+			gpio_set_value(mcu_en_gpio, 0);
+		}
+	}
+}
+
 static int
 qpnp_chg_read(struct qpnp_chg_chip *chip, u8 *val,
 			u16 base, int count)
@@ -7999,7 +8014,7 @@ static void update_heartbeat(struct work_struct *work)
 		}
 		//lfc add for disable normal charge end
 		/*update time 6s*/
-		queue_delayed_work(system_power_efficient_wq, chip->update_heartbeat_work,
+		queue_delayed_work(system_power_efficient_wq, &chip->update_heartbeat_work,
 				      round_jiffies_relative(msecs_to_jiffies
 							     (BATT_HEARTBEAT_INTERVAL)));
 		return;
@@ -8042,6 +8057,7 @@ static void qpnp_start_charge(struct work_struct *work)
 	
 	qpnp_chg_charge_en(chip, 1);
 }
+
 static void qpnp_stop_charge(struct work_struct *work)
 {
 	struct qpnp_chg_chip *chip = container_of(work,
