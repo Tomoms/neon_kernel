@@ -751,12 +751,8 @@ static int check_input_term(struct mixer_build *state, int id,
 		case UAC1_PROCESSING_UNIT:
 		case UAC1_EXTENSION_UNIT:
 		/* UAC2_PROCESSING_UNIT_V2 */
-<<<<<<< HEAD
 		/* UAC2_EFFECT_UNIT */
 		case UAC2_EXTENSION_UNIT_V2: {
-=======
-		/* UAC2_EFFECT_UNIT */ {
->>>>>>> d47b372591bb... ALSA: usb-audio: skip UAC2 EFFECT_UNIT
 			struct uac_processing_unit_descriptor *d = p1;
 
 			if (state->mixer->protocol == UAC_VERSION_2 &&
