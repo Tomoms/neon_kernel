@@ -159,10 +159,7 @@ int __devinit usb6fire_comm_init(struct sfire_chip *chip)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
 	urb = &rt->receiver;
-=======
->>>>>>> a204372b13b3... ALSA: 6fire: fix DMA issues with URB transfer_buffer usage
 	rt->serial = 1;
 	rt->chip = chip;
 	usb_init_urb(urb);
