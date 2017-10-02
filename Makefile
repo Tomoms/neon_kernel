@@ -375,6 +375,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -mtune=cortex-a15 \
 		   -mfpu=neon-vfpv4 \
+		   -ftree-vectorize \
+		   -mvectorize-with-neon-quad \
 #		   -ftree-parallelize-loops=4 \
 		   -ffast-math
 KBUILD_AFLAGS_KERNEL :=
