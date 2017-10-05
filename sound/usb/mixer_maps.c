@@ -322,7 +322,6 @@ static struct usbmix_name_map hercules_usb51_map[] = {
 	{ 0 }				/* terminator */
 };
 
-<<<<<<< HEAD
 /* Plantronics Gamecom 780 has a broken volume control, better to disable it */
 static struct usbmix_name_map gamecom780_map[] = {
 	{ 9, NULL }, /* FU, speaker out */
@@ -331,13 +330,6 @@ static struct usbmix_name_map gamecom780_map[] = {
 
 static const struct usbmix_name_map kef_x300a_map[] = {
 	{ 10, NULL }, /* firmware locks up (?) when we try to access this FU */
-=======
-/* some (all?) SCMS USB3318 devices are affected by a firmware lock up
- * when anything attempts to access FU 10 (control)
- */
-static const struct usbmix_name_map scms_usb3318_map[] = {
-	{ 10, NULL },
->>>>>>> 46ca2c2cbe84... ALSA: usb-audio: extend KEF X300A FU 10 tweak to Arcam rPAC
 	{ 0 }
 };
 
@@ -429,21 +421,12 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.ignore_ctl_error = 1,
 	},
 	{
-<<<<<<< HEAD
 		.id = USB_ID(0x200c, 0x1018),
 		.map = ebox44_map,
 	},
 	{
-=======
-		/* KEF X300A */
->>>>>>> 46ca2c2cbe84... ALSA: usb-audio: extend KEF X300A FU 10 tweak to Arcam rPAC
 		.id = USB_ID(0x27ac, 0x1000),
-		.map = scms_usb3318_map,
-	},
-	{
-		/* Arcam rPAC */
-		.id = USB_ID(0x25c4, 0x0003),
-		.map = scms_usb3318_map,
+		.map = kef_x300a_map,
 	},
 	{ 0 } /* terminator */
 };
