@@ -55,7 +55,6 @@ static struct usb_driver btusb_driver;
 #define BTUSB_BROKEN_ISOC	0x20
 #define BTUSB_WRONG_SCO_MTU	0x40
 #define BTUSB_ATH3012		0x80
-#define BTUSB_INTEL_BOOT	0x200
 
 static struct usb_device_id btusb_table[] = {
 	/* Generic Bluetooth USB device */
@@ -122,10 +121,6 @@ static struct usb_device_id btusb_table[] = {
 
 	/* ASUSTek Computer - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0b05, 0xff, 0x01, 0x01) },
-
-	/* Intel Bluetooth USB Bootloader (RAM module) */
-	{ USB_DEVICE(0x8087, 0x0a5a),
-	  .driver_info = BTUSB_INTEL_BOOT | BTUSB_BROKEN_ISOC },
 
 	{ }	/* Terminating entry */
 };
@@ -1069,6 +1064,7 @@ static int btusb_probe(struct usb_interface *intf,
 	hdev->send     = btusb_send_frame;
 	hdev->destruct = btusb_destruct;
 	hdev->notify   = btusb_notify;
+
 	hdev->owner = THIS_MODULE;
 
 	/* Interface numbers are hardcoded in the specification */
