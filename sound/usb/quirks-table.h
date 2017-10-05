@@ -1975,22 +1975,14 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 	}
 },
 {
-<<<<<<< HEAD
 	USB_DEVICE(0x0582, 0x014d),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		/* .vendor_name = "BOSS", */
 		/* .product_name = "GT-100", */
-=======
-	USB_DEVICE(0x0582, 0x0159),
-	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-		/* .vendor_name = "Roland", */
-		/* .product_name = "UA-22", */
->>>>>>> 7b96cea2eb02... ALSA: snd-usb: add quirks for Roland UA-22
 		.ifnum = QUIRK_ANY_INTERFACE,
 		.type = QUIRK_COMPOSITE,
 		.data = (const struct snd_usb_audio_quirk[]) {
 			{
-<<<<<<< HEAD
 				.ifnum = 1,
 				.type = QUIRK_AUDIO_STANDARD_INTERFACE
 			},
@@ -2004,21 +1996,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 				.data = & (const struct snd_usb_midi_endpoint_info) {
 					.out_cables = 0x0001,
 					.in_cables  = 0x0001
-=======
-				.ifnum = 0,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 1,
-				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-			},
-			{
-				.ifnum = 2,
-				.type = QUIRK_MIDI_FIXED_ENDPOINT,
-				.data = & (const struct snd_usb_midi_endpoint_info) {
-					.out_cables = 0x0001,
-					.in_cables = 0x0001
->>>>>>> 7b96cea2eb02... ALSA: snd-usb: add quirks for Roland UA-22
 				}
 			},
 			{
@@ -2027,7 +2004,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		}
 	}
 },
-<<<<<<< HEAD
 /* this catches most recent vendor-specific Roland devices */
 {
 	.match_flags = USB_DEVICE_ID_MATCH_VENDOR |
@@ -2039,8 +2015,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 		.type = QUIRK_AUTODETECT
 	}
 },
-=======
->>>>>>> 7b96cea2eb02... ALSA: snd-usb: add quirks for Roland UA-22
 
 /* Guillemot devices */
 {
