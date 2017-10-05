@@ -421,19 +421,8 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.ignore_ctl_error = 1,
 	},
 	{
-<<<<<<< HEAD
 		.id = USB_ID(0x200c, 0x1018),
 		.map = ebox44_map,
-=======
-		/* MAYA44 USB+ */
-		.id = USB_ID(0x2573, 0x0008),
-		.map = maya44_map,
-	},
-	{
-		/* KEF X300A */
-		.id = USB_ID(0x27ac, 0x1000),
-		.map = scms_usb3318_map,
->>>>>>> d2d95a7121c2... ALSA: usb-audio: add MAYA44 USB+ mixer control names
 	},
 	{
 		.id = USB_ID(0x27ac, 0x1000),
