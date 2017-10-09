@@ -117,9 +117,9 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
 
-config CPU_FREQ_DEFAULT_GOV_IMPULSE
-	bool "impulse"
-	select CPU_FREQ_GOV_IMPULSE
+config CPU_FREQ_DEFAULT_GOV_ONDEMANDPLUS
+	bool "ondemandplus"
+	select CPU_FREQ_GOV_ONDEMANDPLUS
 	help
 
 config CPU_FREQ_DEFAULT_GOV_BLU_ACTIVE
@@ -228,11 +228,11 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
-config CPU_FREQ_GOV_IMPULSE
-	tristate "'impulse' cpufreq governor"
+config CPU_FREQ_GOV_ONDEMANDPLUS
+	tristate "'ondemandplus' cpufreq governor"
 	depends on CPU_FREQ
 	help
-	  'impulse' - an interactive-based governor.
+	  'ondemandplus' - an interactive- and ondemand-based governor.
 
 config CPU_INPUT_BOOST
 	bool "CPU Input Boost"
