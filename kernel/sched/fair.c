@@ -3390,7 +3390,6 @@ migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 	se->exec_start = 0;
 }
 #endif
-}
 #endif /* CONFIG_SMP */
 
 static unsigned long
@@ -4867,7 +4866,6 @@ static int load_balance(int this_cpu, struct rq *this_rq,
 {
 	int ld_moved, cur_ld_moved, active_balance = 0;
 	int lb_iterations, max_lb_iterations;
-	int total_run_moved = 0;
 	struct sched_group *group;
 	struct rq *busiest = NULL;
 	unsigned long flags;
@@ -4934,7 +4932,7 @@ more_balance:
 		 * cur_ld_moved - load moved in current iteration
 		 * ld_moved     - cumulative load moved across iterations
 		 */
-		cur_ld_moved = move_tasks(&env, &total_run_moved);
+		cur_ld_moved = move_tasks(&env);
 		ld_moved += cur_ld_moved;
 		double_rq_unlock(this_rq, busiest);
 		local_irq_restore(flags);
