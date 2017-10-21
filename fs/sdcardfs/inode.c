@@ -61,6 +61,9 @@ static int sdcardfs_create(struct inode *dir, struct dentry *dentry,
 	struct fs_struct *copied_fs;
 
 	if(!check_caller_access_to_name(dir, dentry->d_name.name)) {
+		printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
+						 "  dentry: %s, task:%s\n",
+						 __func__, dentry->d_name.name, current->comm);
 		err = -EACCES;
 		goto out_eacces;
 	}
@@ -164,6 +167,9 @@ static int sdcardfs_unlink(struct inode *dir, struct dentry *dentry)
 	const struct cred *saved_cred = NULL;
 
 	if(!check_caller_access_to_name(dir, dentry->d_name.name)) {
+		printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
+						 "  dentry: %s, task:%s\n",
+						 __func__, dentry->d_name.name, current->comm);
 		err = -EACCES;
 		goto out_eacces;
 	}
@@ -277,6 +283,9 @@ static int sdcardfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode
 	struct fs_struct *copied_fs;
 
 	if(!check_caller_access_to_name(dir, dentry->d_name.name)) {
+		printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
+						 "  dentry: %s, task:%s\n",
+						 __func__, dentry->d_name.name, current->comm);
 		err = -EACCES;
 		goto out_eacces;
 	}
@@ -378,6 +387,9 @@ static int sdcardfs_rmdir(struct inode *dir, struct dentry *dentry)
 	const struct cred *saved_cred = NULL;
 
 	if(!check_caller_access_to_name(dir, dentry->d_name.name)) {
+		printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
+						 "  dentry: %s, task:%s\n",
+						 __func__, dentry->d_name.name, current->comm);
 		err = -EACCES;
 		goto out_eacces;
 	}
@@ -473,6 +485,9 @@ static int sdcardfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	if(!check_caller_access_to_name(old_dir, old_dentry->d_name.name) ||
 		!check_caller_access_to_name(new_dir, new_dentry->d_name.name)) {
+		printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
+						 "  new_dentry: %s, task:%s\n",
+						 __func__, new_dentry->d_name.name, current->comm);
 		err = -EACCES;
 		goto out_eacces;
 	}
@@ -724,8 +739,12 @@ static int sdcardfs_setattr(struct dentry *dentry, struct iattr *ia)
 	if (!err) {
 		/* check the Android group ID */
 		parent = dget_parent(dentry);
-		if(!check_caller_access_to_name(parent->d_inode, dentry->d_name.name))
+		if(!check_caller_access_to_name(parent->d_inode, dentry->d_name.name)) {
+			printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
+							 "  dentry: %s, task:%s\n",
+							 __func__, dentry->d_name.name, current->comm);
 			err = -EACCES;
+		}
 		dput(parent);
 	}
 
