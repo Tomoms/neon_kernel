@@ -1508,7 +1508,7 @@ static int attach_recursive_mnt(struct mount *source_mnt,
 		child = list_first_entry(&tree_list, struct mount, mnt_hash);
 		umount_tree(child, 0, &tree_list);
 	}
-	br_write_unlock(&vfsmount_lock);
+	br_write_unlock(vfsmount_lock);
 	cleanup_group_ids(source_mnt, NULL);
  out:
 	return err;
@@ -1716,9 +1716,9 @@ static int do_remount(struct path *path, int flags, int mnt_flags,
 		err = change_mount_flags(path->mnt, flags);
 	else {
 		err = do_remount_sb2(path->mnt, sb, flags, data, 0);
-		br_write_lock(&vfsmount_lock);
+		br_write_lock(vfsmount_lock);
 		propagate_remount(mnt);
-		br_write_unlock(&vfsmount_lock);
+		br_write_unlock(vfsmount_lock);
 	}
 	if (!err) {
 		br_write_lock(vfsmount_lock);
@@ -2691,9 +2691,9 @@ void kern_unmount(struct vfsmount *mnt)
 {
 	/* release long term mount so mount point can be released */
 	if (!IS_ERR_OR_NULL(mnt)) {
-		br_write_lock(&vfsmount_lock);
+		br_write_lock(vfsmount_lock);
 		real_mount(mnt)->mnt_ns = NULL;
-		br_write_unlock(&vfsmount_lock);
+		br_write_unlock(vfsmount_lock);
 		mntput(mnt);
 	}
 }

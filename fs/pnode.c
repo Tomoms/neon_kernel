@@ -240,9 +240,9 @@ static int propagate_one(struct mount *m)
 	last_dest = m;
 	last_source = child;
 	if (m->mnt_master != dest_master) {
-		br_write_lock(&vfsmount_lock);
+		br_write_lock(vfsmount_lock);
 		SET_MNT_MARK(m->mnt_master);
-		br_write_unlock(&vfsmount_lock);
+		br_write_unlock(vfsmount_lock);
 	}
 	list_add_tail(&child->mnt_hash, list);
 	return 0;
