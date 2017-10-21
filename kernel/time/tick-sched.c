@@ -286,42 +286,8 @@ static ktime_t tick_nohz_stop_sched_tick(struct tick_sched *ts,
 	ktime_t last_update, expires, ret = { .tv64 = 0 };
 	struct clock_event_device *dev = __get_cpu_var(tick_cpu_device).evtdev;
 	u64 time_delta;
-	int cpu;
 
-	cpu = smp_processor_id();
-	ts = &per_cpu(tick_cpu_sched, cpu);
-
-	/*
-	 * If this cpu is offline and it is the one which updates
-	 * jiffies, then give up the assignment and let it be taken by
-	 * the cpu which runs the tick timer next. If we don't drop
-	 * this here the jiffies might be stale and do_timer() never
-	 * invoked.
-	 */
-	if (unlikely(!cpu_online(cpu))) {
-		if (cpu == tick_do_timer_cpu)
-			tick_do_timer_cpu = TICK_DO_TIMER_NONE;
-		return;
-	}
-
-	if (unlikely(ts->nohz_mode == NOHZ_MODE_INACTIVE)) {
-		return;
-	}
-
-	if (need_resched())
-		return;
-
-	if (unlikely(local_softirq_pending() && cpu_online(cpu))) {
-		static int ratelimit;
-
-		if (ratelimit < 10 &&
-		(local_softirq_pending() & SOFTIRQ_STOP_IDLE_MASK)) {
-			printk(KERN_ERR "NOHZ: local_softirq_pending %02x\n",
-			       (unsigned int) local_softirq_pending());
-			ratelimit++;
-		}
-		return;
-	}
+	time_delta = timekeeping_max_deferment();
 
 	/* Read jiffies and the time when jiffies were updated last */
 	do {
