@@ -673,7 +673,7 @@ void *kgsl_iommu_create_pagetable(void)
 	iommu_pt = kzalloc(sizeof(struct kgsl_iommu_pt), GFP_KERNEL);
 	if (!iommu_pt)
 		return NULL;
-	}
+
 	/* L2 redirect is not stable on IOMMU v1 */
 	if (msm_soc_version_supports_iommu_v0())
 		kgsl_layout.domain_flags = MSM_IOMMU_DOMAIN_PT_CACHEABLE;
