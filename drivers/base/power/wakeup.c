@@ -16,7 +16,6 @@
 #include <linux/debugfs.h>
 #include <linux/proc_fs.h>
 #include <linux/moduleparam.h>
-#include <linux/display_state.h>
 #include <trace/events/power.h>
 
 #include "power.h"
