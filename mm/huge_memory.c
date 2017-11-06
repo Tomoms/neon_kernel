@@ -1020,7 +1020,6 @@ struct page *follow_trans_huge_pmd(struct mm_struct *mm,
 	if (flags & FOLL_GET)
 		get_page_foll(page);
 
-out:
 	return page;
 }
 
