@@ -51,11 +51,15 @@ enum oom_scan_t {
 static inline void set_current_oom_origin(void)
 {
 	current->signal->oom_flags |= OOM_FLAG_ORIGIN;
+	delete_from_adj_tree(current);
+	add_2_adj_tree(current);
 }
 
 static inline void clear_current_oom_origin(void)
 {
 	current->signal->oom_flags &= ~OOM_FLAG_ORIGIN;
+	delete_from_adj_tree(current);
+	add_2_adj_tree(current);
 }
 
 static inline bool oom_task_origin(const struct task_struct *p)
