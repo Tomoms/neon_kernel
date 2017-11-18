@@ -64,18 +64,18 @@ static spinlock_t speedchange_cpumask_lock;
 static struct mutex gov_lock;
 
 /* Hi speed to bump to from lo speed when load burst (default max) */
-static unsigned int hispeed_freq = 1728000;
+static unsigned int hispeed_freq;
 
 /* Go to hi speed when CPU load at or above this value. */
-#define DEFAULT_GO_HISPEED_LOAD 99
+#define DEFAULT_GO_HISPEED_LOAD 98
 static unsigned long go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
 
 /* Go to lowest speed when CPU load at or below this value. */
-#define DEFAULT_GO_LOWSPEED_LOAD 8
+#define DEFAULT_GO_LOWSPEED_LOAD 5
 static unsigned long go_lowspeed_load = DEFAULT_GO_LOWSPEED_LOAD;
 
 /* Target load.  Lower values result in higher CPU speeds. */
-#define DEFAULT_TARGET_LOAD 80
+#define DEFAULT_TARGET_LOAD 90
 static unsigned int default_target_loads[] = {DEFAULT_TARGET_LOAD};
 static spinlock_t target_loads_lock;
 static unsigned int *target_loads = default_target_loads;
@@ -84,7 +84,7 @@ static int ntarget_loads = ARRAY_SIZE(default_target_loads);
 /*
  * The minimum amount of time to spend at a frequency before we can ramp down.
  */
-#define DEFAULT_MIN_SAMPLE_TIME (40 * USEC_PER_MSEC)
+#define DEFAULT_MIN_SAMPLE_TIME (70 * USEC_PER_MSEC)
 static unsigned long min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 
 /*
@@ -125,13 +125,13 @@ static int timer_slack_val = DEFAULT_TIMER_RATE;
 static bool align_windows = true;
 
 /* Improves frequency selection for more energy */
-static bool powersave_bias = 0;
+static bool powersave_bias;
 
 /*
  * Stay at max freq for at least max_freq_hysteresis before dropping
  * frequency.
  */
-static unsigned int max_freq_hysteresis;
+static unsigned int max_freq_hysteresis = 80000;
 
 static bool io_is_busy;
 
@@ -222,12 +222,12 @@ static unsigned int freq_to_above_hispeed_delay(unsigned int freq)
 	spin_lock_irqsave(&above_hispeed_delay_lock, flags);
 
 	for (i = 0; i < nabove_hispeed_delay - 1 &&
-			freq >= above_hispeed_delay[i+1]; i += 2) {
-		ret = above_hispeed_delay[i];
-	}
+			freq >= above_hispeed_delay[i+1]; i += 2)
+		;
+
+	ret = above_hispeed_delay[i];
 
 	spin_unlock_irqrestore(&above_hispeed_delay_lock, flags);
-
 	return ret;
 }
 
@@ -239,13 +239,11 @@ static unsigned int freq_to_targetload(unsigned int freq)
 
 	spin_lock_irqsave(&target_loads_lock, flags);
 
-	for (i = 0; i < ntarget_loads - 1 &&
-			freq >= target_loads[i+1]; i += 2) {
-		ret = target_loads[i];
-	}
+	for (i = 0; i < ntarget_loads - 1 && freq >= target_loads[i+1]; i += 2)
+		;
 
+	ret = target_loads[i];
 	spin_unlock_irqrestore(&target_loads_lock, flags);
-
 	return ret;
 }
 
@@ -403,7 +401,7 @@ static void cpufreq_impulse_timer(unsigned long data)
 	loadadjfreq = (unsigned int)cputime_speedadj * 100;
 	cpu_load = loadadjfreq / pcpu->policy->cur;
 	boosted = boost_val || now < boostpulse_endtime ||
-			cpu_load >= go_hispeed_load;
+			check_cpuboost(data) || cpu_load >= go_hispeed_load;
 	this_hispeed_freq = max(hispeed_freq, pcpu->policy->min);
 
 	if (cpu_load <= go_lowspeed_load && !boost_val) {
@@ -1218,20 +1216,19 @@ static int cpufreq_governor_impulse(struct cpufreq_policy *policy,
 {
 	int rc;
 	unsigned int j;
-	unsigned int cpu = policy->cpu;
 	struct cpufreq_impulse_cpuinfo *pcpu;
 	struct cpufreq_frequency_table *freq_table;
 	unsigned long flags;
 
 	switch (event) {
 	case CPUFREQ_GOV_START:
-		if ((!cpu_online(cpu)) || (!policy))
+		if (!cpu_online(policy->cpu))
 			return -EINVAL;
 
 		mutex_lock(&gov_lock);
 
 		freq_table =
-			cpufreq_frequency_get_table(cpu);
+			cpufreq_frequency_get_table(policy->cpu);
 		if (!hispeed_freq)
 			hispeed_freq = policy->max;
 
@@ -1305,11 +1302,12 @@ static int cpufreq_governor_impulse(struct cpufreq_policy *policy,
 		break;
 
 	case CPUFREQ_GOV_LIMITS:
-		/* If device is being removed, skip set limits */
-		if (!policy->cur)
-			break;
-		__cpufreq_driver_target(policy,
-+				policy->cur, CPUFREQ_RELATION_L);
+		if (policy->max < policy->cur)
+			__cpufreq_driver_target(policy,
+					policy->max, CPUFREQ_RELATION_H);
+		else if (policy->min > policy->cur)
+			__cpufreq_driver_target(policy,
+					policy->min, CPUFREQ_RELATION_L);
 		for_each_cpu(j, policy->cpus) {
 			pcpu = &per_cpu(cpuinfo, j);
 
@@ -1320,15 +1318,15 @@ static int cpufreq_governor_impulse(struct cpufreq_policy *policy,
 			}
 
 			spin_lock_irqsave(&pcpu->target_freq_lock, flags);
-			if (policy->max < pcpu->target_freq)
+			if (policy->max < pcpu->target_freq) {
 				pcpu->target_freq = policy->max;
-			else if (policy->min >= pcpu->target_freq)
+			} else if (policy->min >= pcpu->target_freq) {
 				pcpu->target_freq = policy->min;
+			}
 
 			spin_unlock_irqrestore(&pcpu->target_freq_lock, flags);
 			up_read(&pcpu->enable_sem);
 		}
-
 		break;
 	}
 	return 0;
