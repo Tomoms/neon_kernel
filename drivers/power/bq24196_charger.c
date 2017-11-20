@@ -520,10 +520,7 @@ static int bq24196_probe(struct i2c_client *client, const struct i2c_device_id *
 		goto err_check_functionality_failed;
 		}
 	/* Get new ID for the new battery device */
-	retval = idr_pre_get(&bq24196_charger_id, GFP_KERNEL);
-	if (retval == 0)
-		return -ENOMEM;
-	retval = idr_get_new(&bq24196_charger_id, client, &num);
+	retval = idr_alloc(&bq24196_charger_id, client, 0, 0, GFP_KERNEL);
 	if (retval < 0)
 		return retval;
 	
