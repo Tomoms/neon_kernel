@@ -262,11 +262,6 @@ static void autosmp_input_event(struct input_handle *handle, unsigned int type,
 	if (!asmp_param.enabled)
 		return;
 
-#ifdef CONFIG_STATE_NOTIFIER
-	if (state_suspended)
-		return;
-#endif
-
 	now = ktime_to_us(ktime_get());
 	if (now - last_boost_time < MIN_INPUT_INTERVAL)
 		return;
