@@ -9,14 +9,16 @@
  *
  */
 
+#include <linux/state_notifier.h>
+#include <linux/notifier.h>
 #include <linux/export.h>
 #include <linux/module.h>
-#include <linux/state_notifier.h>
+#include <linux/fb.h>
 #include <linux/delay.h>
 #include <linux/mutex.h>
 #include "power.h"
 
-#define DEFAULT_SUSPEND_DEFER_TIME 	10
+#define DEFAULT_SUSPEND_DEFER_TIME	10
 #define STATE_NOTIFIER			"state_notifier"
 
 /*
@@ -25,21 +27,20 @@
 static unsigned int debug = 1;
 module_param_named(debug_mask, debug, uint, 0644);
 
+static bool state_suspended;
+module_param_named(state_suspended, state_suspended, bool, 0444);
+
 #define dprintk(msg...)		\
 do {				\
 	if (debug)		\
 		pr_info(msg);	\
 } while (0)
 
-static bool enabled = 1;
-module_param_named(enabled, enabled, bool, 0664);
 static unsigned int suspend_defer_time = DEFAULT_SUSPEND_DEFER_TIME;
 module_param_named(suspend_defer_time, suspend_defer_time, uint, 0664);
 static struct delayed_work suspend_work;
 static struct workqueue_struct *susp_wq;
 struct work_struct resume_work;
-bool state_suspended;
-module_param_named(state_suspended, state_suspended, bool, 0444);
 static bool suspend_in_progress;
 
 static BLOCKING_NOTIFIER_HEAD(state_notifier_list);
