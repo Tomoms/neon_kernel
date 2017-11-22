@@ -2355,7 +2355,6 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 	struct rq *rq;
 	bool notify = false;
 #ifdef CONFIG_SMP
-	struct rq *rq;
 	int long_sleep = 0;
 	u64 wallclock;
 #endif
