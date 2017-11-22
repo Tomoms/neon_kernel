@@ -86,7 +86,7 @@ static spinlock_t speedchange_cpumask_lock;
  * Tunables start
  */
 
-#define DEFAULT_TIMER_RATE (20 * USEC_PER_MSEC)
+#define DEFAULT_TIMER_RATE (40 * USEC_PER_MSEC)
 static unsigned long timer_rate;
 
 #define DEFAULT_UP_THRESHOLD 90
@@ -110,7 +110,7 @@ static u64 staycycles_resetfreq;
 #define DEFAULT_IO_IS_BUSY 0
 static unsigned int io_is_busy;
 
-static u64 screen_on_min_freq = 422400;
+static u64 screen_on_min_freq = 300000;
 
 /*
  * Tunables end
