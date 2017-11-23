@@ -1333,10 +1333,10 @@ void rand_initialize_disk(struct gendisk *disk)
  *
  * As with add_interrupt_randomness() be paranoid and only
  * credit the output as 50% entropic.
- */
+ *
 static int arch_random_refill(void)
 {
-	const unsigned int nlongs = 64;	/* Arbitrary number */
+	const unsigned int nlongs = 64; Arbitrary number 
 	unsigned int n = 0;
 	unsigned int i;
 	unsigned long buf[nlongs];
@@ -1358,6 +1358,7 @@ static int arch_random_refill(void)
 
 	return n;
 }
+*/
 
 static ssize_t
 _random_read(int nonblock, char __user *buf, size_t nbytes)
