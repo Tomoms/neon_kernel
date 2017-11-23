@@ -26,6 +26,8 @@ struct timekeeper {
 	s64			xtime_remainder;
 	/* Raw nano seconds accumulated per NTP interval. */
 	u32			raw_interval;
+	/* CLOCK_MONOTONIC time value of a pending leap-second*/
+	ktime_t next_leap_ktime;
 
 	/* Current CLOCK_REALTIME time in seconds */
 	u64			xtime_sec;

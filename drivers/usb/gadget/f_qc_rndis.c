@@ -1207,17 +1207,6 @@ static long rndis_qc_ioctl(struct file *fp, unsigned cmd, unsigned long arg)
 		pr_debug("Sent max packet size %d",
 				qc_max_pkt_size);
 		break;
-	case RNDIS_QC_GET_MAX_PKT_SIZE:
-		ret = copy_to_user((void __user *)arg,
-					&rndis->max_pkt_size,
-					sizeof(rndis->max_pkt_size));
-		if (ret) {
-			pr_err("copying to user space failed");
-			ret = -EFAULT;
-		}
-		pr_debug("Sent max packet size %d",
-				rndis->max_pkt_size);
-		break;
 	default:
 		pr_err("Unsupported IOCTL");
 		ret = -EINVAL;
