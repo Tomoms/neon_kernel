@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= arm
-CROSS_COMPILE	?= ../../huashan/ubertc/out/arm-eabi-5.x/bin/arm-eabi-
+CROSS_COMPILE	?= ../../TC/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -377,7 +377,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -mfpu=neon-vfpv4 \
 		   -ftree-vectorize \
 		   -mvectorize-with-neon-quad \
-		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize -fforce-addr -fsched-spec-load -fgcse-lm -fgcse-sm #-flto -fno-toplevel-reorder -fuse-linker-plugin
+		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize -fforce-addr -fsched-spec-load -fgcse-lm -fgcse-sm -fopenmp #-flto -fno-toplevel-reorder -fuse-linker-plugin
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
