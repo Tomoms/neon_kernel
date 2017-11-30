@@ -377,7 +377,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -mfpu=neon-vfpv4 \
 		   -ftree-vectorize \
 		   -mvectorize-with-neon-quad \
-		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize -fforce-addr -fsched-spec-load -fgcse-lm -fgcse-sm -fopenmp -Wno-misleading-indentation #-flto -fno-toplevel-reorder -fuse-linker-plugin
+		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize -fforce-addr -fsched-spec-load -fgcse-lm -fgcse-sm -Wno-misleading-indentation #-flto -fno-toplevel-reorder -fuse-linker-plugin
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
