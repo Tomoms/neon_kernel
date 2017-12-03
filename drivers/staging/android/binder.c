@@ -1662,7 +1662,6 @@ static int binder_translate_binder(struct flat_binder_object *fp,
 	fp->cookie = 0;
 	binder_inc_ref(ref, fp->hdr.type == BINDER_TYPE_HANDLE, &thread->todo);
 
-	trace_binder_transaction_node_to_ref(t, node, ref);
 	binder_debug(BINDER_DEBUG_TRANSACTION,
 		     "        node %d u%016llx -> ref %d desc %d\n",
 		     node->debug_id, (u64)node->ptr,
@@ -1698,7 +1697,6 @@ static int binder_translate_handle(struct flat_binder_object *fp,
 		fp->cookie = ref->node->cookie;
 		binder_inc_node(ref->node, fp->hdr.type == BINDER_TYPE_BINDER,
 				0, NULL);
-		trace_binder_transaction_ref_to_node(t, ref);
 		binder_debug(BINDER_DEBUG_TRANSACTION,
 			     "        ref %d desc %d -> node %d u%016llx\n",
 			     ref->debug_id, ref->desc, ref->node->debug_id,
@@ -1715,7 +1713,6 @@ static int binder_translate_handle(struct flat_binder_object *fp,
 		fp->cookie = 0;
 		binder_inc_ref(new_ref, fp->hdr.type == BINDER_TYPE_HANDLE,
 			       NULL);
-		trace_binder_transaction_ref_to_ref(t, ref, new_ref);
 		binder_debug(BINDER_DEBUG_TRANSACTION,
 			     "        ref %d desc %d -> ref %d desc %d (node %d)\n",
 			     ref->debug_id, ref->desc, new_ref->debug_id,
@@ -1768,7 +1765,6 @@ static int binder_translate_fd(int fd,
 		goto err_get_unused_fd;
 	}
 	task_fd_install(target_proc, target_fd, file);
-	trace_binder_transaction_fd(t, fd, target_fd);
 	binder_debug(BINDER_DEBUG_TRANSACTION, "        fd %d -> %d\n",
 		     fd, target_fd);
 
