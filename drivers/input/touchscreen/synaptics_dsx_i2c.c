@@ -2587,7 +2587,7 @@ static int __devinit synaptics_rmi4_probe(struct i2c_client *client,
 		exp_data.initialized = true;
 	}
 
-	exp_data.workqueue = create_singlethread_workqueue("dsx_exp_workqueue");
+	exp_data.workqueue = alloc_ordered_workqueue("dsx_exp_workqueue", WQ_HIGHPRI);
 	INIT_DELAYED_WORK(&exp_data.work, synaptics_rmi4_exp_fn_work);
 	exp_data.rmi4_data = rmi4_data;
 	exp_data.queue_work = true;
