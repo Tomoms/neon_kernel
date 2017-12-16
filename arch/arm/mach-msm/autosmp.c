@@ -40,7 +40,7 @@
 #define DEFAULT_NR_CPUS_BOOSTED		2
 #define DEFAULT_UPDATE_RATE		30
 #define MIN_INPUT_INTERVAL		150 * 1000L
-#define DEFAULT_MIN_BOOST_FREQ		1026000
+#define DEFAULT_MIN_BOOST_FREQ		1497000
 
 #if DEBUG
 struct asmp_cpudata_t {
@@ -154,12 +154,10 @@ static void __cpuinit asmp_work_fn (struct work_struct* work) {
 	now = ktime_to_us(ktime_get());
 	/* hotplug one core if all online cores are over up_rate limit */
 	if (slow_rate > up_rate && fast_rate >= min_boost_freq) {
-		if (nr_cpu_online < asmp_param.max_cpus &&
-				cycle >= asmp_param.cycle_up) {
+		if (nr_cpu_online < asmp_param.max_cpus) {
 			cpu = cpumask_next_zero(0, cpu_online_mask);
 			if (cpu_is_offline(cpu))
 				cpu_up(cpu);
-			cycle = 0;
 #if DEBUG
 			pr_info(ASMP_TAG"CPU [%d] On  | Mask [%d%d%d%d]\n",
 				cpu, cpu_online(0), cpu_online(1), cpu_online(2), cpu_online(3));
@@ -173,16 +171,13 @@ static void __cpuinit asmp_work_fn (struct work_struct* work) {
 			cpu = cpumask_next_zero(0, cpu_online_mask);
 			if (cpu_is_offline(cpu))
 				cpu_up(cpu);
-			// cycle = 0;
 		}
 	/* unplug slowest core if all online cores are under down_rate limit */
 	} else if (slow_cpu && (fast_rate < down_rate)) {
-		if (nr_cpu_online > asmp_param.min_cpus &&
-				cycle >= asmp_param.cycle_down) {
+		if (nr_cpu_online > asmp_param.min_cpus) {
 
 			if (cpu_online(slow_cpu))
 	 			cpu_down(slow_cpu);
-			cycle = 0;
 #if DEBUG
 			pr_info(ASMP_TAG"CPU [%d] Off | Mask [%d%d%d%d]\n",
 				slow_cpu, cpu_online(0), cpu_online(1), cpu_online(2), cpu_online(3));
@@ -191,7 +186,6 @@ static void __cpuinit asmp_work_fn (struct work_struct* work) {
 		}
 	} /* else do nothing */
 
-	cycle++;
 	reschedule_hotplug_work();
 }
 
@@ -234,6 +228,17 @@ static __ref void asmp_resume (struct work_struct* work) {
 	pr_info(ASMP_TAG"Screen -> On. Resumed.\n");
 }
 
+static void asmp_power_suspend(void)
+{
+	queue_work(system_wq, &suspend_work);
+}
+
+static void asmp_power_resume(void)
+{
+	queue_work(system_wq, &resume_work);
+}
+
+
 static int state_notifier_callback(struct notifier_block *this,
 				unsigned long event, void *data)
 {
@@ -242,10 +247,10 @@ static int state_notifier_callback(struct notifier_block *this,
 
 	switch (event) {
 		case STATE_NOTIFIER_ACTIVE:
-			asmp_resume();
+			asmp_power_resume();
 			break;
 		case STATE_NOTIFIER_SUSPEND:
-			asmp_suspend();
+			asmp_power_suspend();
 			break;
 		default:
 			break;
@@ -335,30 +340,7 @@ static const struct input_device_id autosmp_ids[] = {
 		.evbit = { BIT_MASK(EV_KEY) },
 	},
 	{ },
-
-static void asmp_power_suspend (void) {
-	queue_work(system_wq, &suspend_work);
-}
-
-static void asmp_power_resume (void) {
-	queue_work(system_wq, &resume_work);
-}
-
-static int state_notifier_callback(struct notifier_block* this, unsigned long event, void* data)
-{
-	switch (event) {
-	case STATE_NOTIFIER_ACTIVE:
-			asmp_power_resume();
-			break;
-	case STATE_NOTIFIER_SUSPEND:
-			asmp_power_suspend();
-			break;
-	default:
-			break;
-	}
-
-	return NOTIFY_OK;
-}
+};
 
 static struct input_handler autosmp_input_handler = {
 	.event		= autosmp_input_event,
@@ -645,9 +627,9 @@ static int __init asmp_init(void)
 	if (!asmp_workq)
 		return -ENOMEM;
 	INIT_DELAYED_WORK(&asmp_work, asmp_work_fn);
-	if (enabled)
+	if (asmp_param.enabled)
 		queue_delayed_work(asmp_workq, &asmp_work,
-				   msecs_to_jiffies(ASMP_STARTDELAY));
+				   msecs_to_jiffies(10000));
 
 	INIT_WORK(&suspend_work, asmp_suspend);
 	INIT_WORK(&resume_work, asmp_resume);
