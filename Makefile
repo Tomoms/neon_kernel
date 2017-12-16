@@ -371,7 +371,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -mtune=cortex-a15 \
 		   -mfpu=neon-vfpv4 \
-		   -ftree-vectorize \
 		   -mvectorize-with-neon-quad \
 		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize -fforce-addr -fsched-spec-load -fgcse-lm -fgcse-sm -Wno-misleading-indentation #-flto -fno-toplevel-reorder -fuse-linker-plugin
 KBUILD_AFLAGS_KERNEL :=
@@ -566,7 +565,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS	+= -O3 -g0 -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-tree-vectorize -Wno-array-bounds -fivopts -fno-inline-functions  $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS	+= -O3 -g0 -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-tree-vectorize -Wno-array-bounds -fivopts -finline-functions  $(call cc-disable-warning,maybe-uninitialized,)
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
