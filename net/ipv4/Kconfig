@@ -477,6 +477,18 @@ config TCP_CONG_WESTWOOD
 	TCP Westwood+ significantly increases fairness wrt TCP Reno in
 	wired networks and throughput over wireless links.
 
+config TCP_CONG_ASCAREX
+	tristate "TCP Ascarex"
+	default y
+	---help---
+	TCP Ascarex is a sender-side only modification of the TCP Westwood+
+	protocol stack that optimizes the performance of TCP congestion
+	control. It is based on end-to-end bandwidth estimation to set
+	congestion window and slow start threshold after a congestion
+	episode. A modification to TCP's congestion control mechanism for use
+	with large congestion windows. A table indicates how much to
+	increase the congestion window by when an ACK is received.
+
 config TCP_CONG_HTCP
         tristate "H-TCP"
         default m
@@ -608,6 +620,9 @@ choice
 	config DEFAULT_WESTWOOD
 		bool "Westwood" if TCP_CONG_WESTWOOD=y
 
+	config DEFAULT_ASCAREX
+		bool "Ascarex" if TCP_CONG_ASCAREX=y
+
 	config DEFAULT_RENO
 		bool "Reno"
 
@@ -630,6 +645,7 @@ config DEFAULT_TCP_CONG
 	default "westwood" if DEFAULT_WESTWOOD
 	default "veno" if DEFAULT_VENO
 	default "reno" if DEFAULT_RENO
+	default "ascarex" if DEFAULT_ASCAREX
 	default "cubic"
 
 config TCP_MD5SIG
