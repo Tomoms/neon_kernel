@@ -1461,14 +1461,13 @@ int sanity_check_ckpt(struct f2fs_sb_info *sbi)
 			le16_to_cpu(ckpt->cur_data_blkoff[i]) >= blocks_per_seg) {
 			return 1;
 		}
-
+	}
 	if (unlikely(fsmeta < F2FS_MIN_SEGMENTS ||
 			ovp_segments == 0 || reserved_segments == 0)) {
 		f2fs_msg(sbi->sb, KERN_ERR,
 			"Wrong layout: check mkfs.f2fs version");
 		return 1;
 	}
-
 	if (unlikely(f2fs_cp_error(sbi))) {
 		f2fs_msg(sbi->sb, KERN_ERR, "A bug case: need to run fsck");
 		return 1;
