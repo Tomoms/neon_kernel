@@ -54,7 +54,6 @@ static struct delayed_work asmp_work;
 static struct work_struct suspend_work, resume_work;
 static struct workqueue_struct *asmp_workq;
 static bool enabled_switch = ASMP_ENABLED;
-static DEFINE_PER_CPU(struct asmp_cpudata_t, asmp_cpudata);
 
 static struct asmp_param_struct {
 	unsigned int delay;
