@@ -420,14 +420,6 @@
 #define __ARM_NR_set_tls		(__ARM_NR_BASE+5)
 
 /*
- * This may need to be greater than __NR_last_syscall+1 in order to
- * account for the padding in the syscall table
- */
-#ifdef __KERNEL__
-#define __NR_syscalls  (388)
-#endif
-
-/*
  * *NOTE*: This is a ghost syscall private to the kernel.  Only the
  * __kuser_cmpxchg code in entry-armv.S should be aware of its
  * existence.  Don't ever use this from user code.
