@@ -613,8 +613,9 @@ static struct attribute_group asmp_stats_attr_group = {
 static int __init asmp_init(void)
 {
 	int ret = 0;
+#if DEBUG
 	unsigned int cpu;
-	int rc;
+#endif
 
 	asmp_param.max_cpus = NR_CPUS;
 #if DEBUG
