@@ -13,7 +13,7 @@
 #include <linux/jhash.h>
 #include <linux/hash.h>
 
-static struct fast_hash_ops arch_hash_ops __read_mostly = {
+static struct fast_hash_ops arch_hash_ops = {
 	.hash  = jhash,
 	.hash2 = jhash2,
 };
