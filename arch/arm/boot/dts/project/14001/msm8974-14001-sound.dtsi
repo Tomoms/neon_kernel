@@ -66,6 +66,7 @@
 		qcom,cdc-vdd-spkdrv-voltage = <4500000 4500000>;
 		qcom,cdc-vdd-spkdrv-current = <1250000>;
 		qcom,cdc-on-demand-supplies = "cdc-vdd-spkdrv", "cdc-vdd-hpmic-switch";
+		qcom,cdc-micbias-cfilt3-mv = <1800>;
 
 		qcom,cdc-micbias1-ext-cap;
 		qcom,cdc-micbias2-ext-cap;
