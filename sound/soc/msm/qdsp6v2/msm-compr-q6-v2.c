@@ -1207,18 +1207,8 @@ struct snd_enc_generic32 {
 	u32 bw;	/* encoder bandwidth */
 	s32 reserved[15];
 };
-<<<<<<< HEAD
 struct snd_dec_ddp32 {
 	u32 params_length;
-=======
-struct snd_dec_dts32 {
-	u32 modelIdLength;
-	compat_uptr_t modelId;
-};
-struct snd_dec_ddp32 {
-	u32 params_length;
-	compat_uptr_t params;
->>>>>>> c21637f993ef... ASoC: msm: qdsp6v2: Userspace interaction cleanup
 	u32 params_id[18];
 	u32 params_value[18];
 };
@@ -1229,10 +1219,6 @@ union snd_codec_options32 {
 	struct snd_enc_real32 real;
 	struct snd_enc_flac32 flac;
 	struct snd_enc_generic32 generic;
-<<<<<<< HEAD
-=======
-	struct snd_dec_dts32 dts;
->>>>>>> c21637f993ef... ASoC: msm: qdsp6v2: Userspace interaction cleanup
 	struct snd_dec_ddp32 ddp;
 };
 
@@ -1248,11 +1234,6 @@ struct snd_codec32 {
 	u32 ch_mode;
 	u32 format;
 	u32 align;
-<<<<<<< HEAD
-=======
-	u32 transcode_dts;
-	struct snd_dec_dts32 dts;
->>>>>>> c21637f993ef... ASoC: msm: qdsp6v2: Userspace interaction cleanup
 	union snd_codec_options32 options;
 	u32 reserved[3];
 };
@@ -1379,10 +1360,6 @@ static int msm_compr_compat_ioctl(struct snd_pcm_substream *substream,
 		params.codec.ch_mode = params32.codec.ch_mode;
 		params.codec.format = params32.codec.format;
 		params.codec.align = params32.codec.align;
-<<<<<<< HEAD
-=======
-		params.codec.transcode_dts = params32.codec.transcode_dts;
->>>>>>> c21637f993ef... ASoC: msm: qdsp6v2: Userspace interaction cleanup
 
 		switch (params.codec.id) {
 		case SND_AUDIOCODEC_WMA:
@@ -1425,23 +1402,11 @@ static int msm_compr_compat_ioctl(struct snd_pcm_substream *substream,
 		case SND_AUDIOCODEC_DTS_LBR:
 		case SND_AUDIOCODEC_DTS_LBR_PASS_THROUGH:
 		case SND_AUDIOCODEC_DTS_TRANSCODE_LOOPBACK:
-<<<<<<< HEAD
-=======
-			params.codec.options.dts.modelIdLength =
-			params32.codec.options.dts.modelIdLength;
-			params.codec.options.dts.modelId =
-			compat_ptr(params32.codec.options.dts.modelId);
->>>>>>> c21637f993ef... ASoC: msm: qdsp6v2: Userspace interaction cleanup
 		break;
 		case SND_AUDIOCODEC_AC3:
 		case SND_AUDIOCODEC_EAC3:
 			params.codec.options.ddp.params_length =
 			params32.codec.options.ddp.params_length;
-<<<<<<< HEAD
-=======
-			params.codec.options.ddp.params =
-			compat_ptr(params32.codec.options.ddp.params);
->>>>>>> c21637f993ef... ASoC: msm: qdsp6v2: Userspace interaction cleanup
 			memcpy(params.codec.options.ddp.params_value,
 			params32.codec.options.ddp.params_value,
 			sizeof(params32.codec.options.ddp.params_value));
