@@ -25,6 +25,7 @@
 #include <linux/suspend.h>
 #include <linux/syscore_ops.h>
 #include <linux/rtc.h>
+#include <linux/cpuidle.h>
 #include <linux/ftrace.h>
 #include <trace/events/power.h>
 
@@ -61,7 +62,9 @@ static void freeze_begin(void)
 
 static void freeze_enter(void)
 {
+	cpuidle_resume();
 	wait_event(suspend_freeze_wait_head, suspend_freeze_wake);
+	cpuidle_pause();
 }
 
 void freeze_wake(void)
