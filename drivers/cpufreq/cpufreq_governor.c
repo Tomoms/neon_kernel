@@ -356,7 +356,7 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 					       &j_cdbs->prev_cpu_wall, io_busy);
 			j_cdbs->prev_load = 100 * (unsigned long)(j_cdbs->prev_cpu_wall -
 						   j_cdbs->prev_cpu_idle) /
-						   j_cdbs->prev_cpu_wall;
+						   (unsigned long)j_cdbs->prev_cpu_wall;
 
 			if (ignore_nice)
 				j_cdbs->prev_cpu_nice =
