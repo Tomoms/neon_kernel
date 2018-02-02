@@ -372,7 +372,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
 		   -mtune=cortex-a15 \
-		   -mfloat-abi=softfp \
 		   -mfpu=neon-vfpv4 \
 		   -mvectorize-with-neon-quad \
 		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -floop-flatten -floop-nest-optimize -fforce-addr -fsched-spec-load -fgcse-las -fgcse-lm -fgcse-sm -Wno-misleading-indentation -fweb -frename-registers -fira-loop-pressure -fsched-pressure -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im
