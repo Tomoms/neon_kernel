@@ -23,11 +23,14 @@
 
 #ifdef __KERNEL__
 
+#include <linux/string.h>
 #include <linux/types.h>
+#include <linux/blk_types.h>
 #include <asm/byteorder.h>
 #include <asm/memory.h>
 #include <asm-generic/pci_iomap.h>
 #include <mach/msm_rtb.h>
+#include <xen/xen.h>
 
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
@@ -56,10 +59,11 @@ extern void __raw_readsl(const void __iomem *addr, void *data, int longlen);
 
 #define __raw_write_logged(v, a, _t)	({ \
 	int _ret; \
-	void *_addr = (void *)(a); \
+	volatile void __iomem *_a = (a); \
+	void *_addr = (void __force *)(_a); \
 	_ret = uncached_logk(LOGK_WRITEL, _addr); \
 	ETB_WAYPOINT; \
-	__raw_write##_t##_no_log((v), _addr); \
+	__raw_write##_t##_no_log((v), _a); \
 	if (_ret) \
 		LOG_BARRIER; \
 	})
@@ -83,11 +87,12 @@ extern void __raw_readsl(const void __iomem *addr, void *data, int longlen);
 
 #define __raw_read_logged(a, _l, _t)		({ \
 	unsigned _t __a; \
-	void *_addr = (void *)(a); \
+	const volatile void __iomem *_a = (a); \
+	void *_addr = (void __force *)(_a); \
 	int _ret; \
 	_ret = uncached_logk(LOGK_READL, _addr); \
 	ETB_WAYPOINT; \
-	__a = __raw_read##_l##_no_log(_addr);\
+	__a = __raw_read##_l##_no_log(_a);\
 	if (_ret) \
 		LOG_BARRIER; \
 	__a; \
@@ -310,9 +315,36 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
 #define writesw(p,d,l)		__raw_writesw(p,d,l)
 #define writesl(p,d,l)		__raw_writesl(p,d,l)
 
+#ifndef __ARMBE__
+static inline void memset_io(volatile void __iomem *dst, unsigned c,
+	size_t count)
+{
+	extern void mmioset(void *, unsigned int, size_t);
+	mmioset((void __force *)dst, c, count);
+}
+#define memset_io(dst,c,count) memset_io(dst,c,count)
+
+static inline void memcpy_fromio(void *to, const volatile void __iomem *from,
+	size_t count)
+{
+	extern void mmiocpy(void *, const void *, size_t);
+	mmiocpy(to, (const void __force *)from, count);
+}
+#define memcpy_fromio(to,from,count) memcpy_fromio(to,from,count)
+
+static inline void memcpy_toio(volatile void __iomem *to, const void *from,
+	size_t count)
+{
+	extern void mmiocpy(void *, const void *, size_t);
+	mmiocpy((void __force *)to, from, count);
+}
+#define memcpy_toio(to,from,count) memcpy_toio(to,from,count)
+
+#else
 #define memset_io(c,v,l)	_memset_io(c,(v),(l))
 #define memcpy_fromio(a,c,l)	_memcpy_fromio((a),c,(l))
 #define memcpy_toio(c,a,l)	_memcpy_toio(c,(a),(l))
+#endif
 
 #endif	/* readl */
 
@@ -373,6 +405,13 @@ extern void pci_iounmap(struct pci_dev *dev, void __iomem *addr);
  */
 #define BIOVEC_MERGEABLE(vec1, vec2)	\
 	((bvec_to_phys((vec1)) + (vec1)->bv_len) == bvec_to_phys((vec2)))
+
+struct bio_vec;
+extern bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
+				      const struct bio_vec *vec2);
+#define BIOVEC_PHYS_MERGEABLE(vec1, vec2)				\
+	(__BIOVEC_PHYS_MERGEABLE(vec1, vec2) &&				\
+	 (!xen_domain() || xen_biovec_phys_mergeable(vec1, vec2)))
 
 #ifdef CONFIG_MMU
 #define ARCH_HAS_VALID_PHYS_ADDR_RANGE

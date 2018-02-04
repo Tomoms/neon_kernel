@@ -568,7 +568,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS	+= -O3 -g0 -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-tree-vectorize -Wno-array-bounds -fivopts -finline-functions  $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS	+= -O3 -g0 -fmodulo-sched -fmodulo-sched-allow-regmoves -ftree-vectorize -Wno-array-bounds -fivopts -finline-functions  $(call cc-disable-warning,maybe-uninitialized,)
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one

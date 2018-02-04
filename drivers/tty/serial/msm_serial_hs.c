@@ -1390,7 +1390,8 @@ static void flip_insert_work(struct work_struct *work)
 				retval << 8 | (rx_count - retval) << 16;
 	}
 	if (msm_uport->rx.buffer_pending)
-		schedule_delayed_work(&msm_uport->rx.flip_insert_work,
+		queue_delayed_work(system_power_efficient_wq,
+				      &msm_uport->rx.flip_insert_work,
 				      msecs_to_jiffies(RETRY_TIMEOUT));
 	else
 		if ((msm_uport->clk_state == MSM_HS_CLK_ON) &&
@@ -1521,8 +1522,9 @@ static void msm_serial_hs_rx_tlet(unsigned long tlet_ptr)
 out:
 	if (msm_uport->rx.buffer_pending) {
 		MSM_HS_WARN("tty buffer exhausted.Stalling\n");
-		schedule_delayed_work(&msm_uport->rx.flip_insert_work
-				      , msecs_to_jiffies(RETRY_TIMEOUT));
+		queue_delayed_work(system_power_efficient_wq,
+					&msm_uport->rx.flip_insert_work,
+					msecs_to_jiffies(RETRY_TIMEOUT));
 	}
 	/* release wakelock in 500ms, not immediately, because higher layers
 	 * don't always take wakelocks when they should
