@@ -68,16 +68,17 @@ static unsigned int default_target_loads[] = {DEFAULT_TARGET_LOAD};
 
 #define DEFAULT_TIMER_RATE (20 * USEC_PER_MSEC)
 #define DEFAULT_TIMER_RATE_SUSP ((unsigned long)(50 * USEC_PER_MSEC))
-#define DEFAULT_ABOVE_HISPEED_DELAY DEFAULT_TIMER_RATE
+#define DEFAULT_ABOVE_HISPEED_DELAY (DEFAULT_TIMER_RATE * 3)
 static unsigned int default_above_hispeed_delay[] = {
 	DEFAULT_ABOVE_HISPEED_DELAY };
 
 struct cpufreq_impulse_tunables {
 	int usage_count;
 	/* Hi speed to bump to from lo speed when load burst (default max) */
+#define DEFAULT_HISPEED_FREQ 1190400
 	unsigned int hispeed_freq;
 	/* Go to hi speed when CPU load at or above this value. */
-#define DEFAULT_GO_HISPEED_LOAD 99
+#define DEFAULT_GO_HISPEED_LOAD 70
 	unsigned long go_hispeed_load;
 
 	/* Target load. Lower values result in higher CPU speeds. */
@@ -1082,6 +1083,7 @@ static struct cpufreq_impulse_tunables *alloc_tunable(
 	tunables->min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 	tunables->timer_rate = DEFAULT_TIMER_RATE;
 	tunables->timer_slack_val = DEFAULT_TIMER_SLACK;
+	tunables->io_is_busy = 1;
 
 	spin_lock_init(&tunables->target_loads_lock);
 	spin_lock_init(&tunables->above_hispeed_delay_lock);
@@ -1237,7 +1239,7 @@ static int cpufreq_governor_impulse(struct cpufreq_policy *policy,
 
 		freq_table = cpufreq_frequency_get_table(policy->cpu);
 		if (!tunables->hispeed_freq)
-			tunables->hispeed_freq = policy->max;
+			tunables->hispeed_freq = DEFAULT_HISPEED_FREQ;
 
 		ppol = per_cpu(polinfo, policy->cpu);
 		ppol->policy = policy;

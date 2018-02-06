@@ -68,10 +68,10 @@ static spinlock_t speedchange_cpumask_lock;
 static struct mutex gov_lock;
 
 /* Hi speed to bump to from lo speed when load burst (default max) */
-static unsigned int hispeed_freq;
+static unsigned int hispeed_freq = 1190400;
 
 /* Go to hi speed when CPU load at or above this value. */
-#define DEFAULT_GO_HISPEED_LOAD 99
+#define DEFAULT_GO_HISPEED_LOAD 70
 static unsigned long go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
 
 /* Target load.  Lower values result in higher CPU speeds. */
@@ -97,7 +97,7 @@ static unsigned long timer_rate = DEFAULT_TIMER_RATE;
  * Wait this long before raising speed above hispeed, by default a single
  * timer interval.
  */
-#define DEFAULT_ABOVE_HISPEED_DELAY DEFAULT_TIMER_RATE
+#define DEFAULT_ABOVE_HISPEED_DELAY (DEFAULT_TIMER_RATE * 2)
 static unsigned int default_above_hispeed_delay[] = {
 	DEFAULT_ABOVE_HISPEED_DELAY };
 static spinlock_t above_hispeed_delay_lock;
@@ -124,7 +124,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
  */
 static unsigned int max_freq_hysteresis;
 
-static bool io_is_busy;
+static bool io_is_busy = 1;
 
 /* Use agressive frequency step calculation, above a given a load threshold */
 static bool fastlane = false;

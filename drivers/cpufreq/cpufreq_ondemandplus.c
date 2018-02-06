@@ -107,10 +107,10 @@ static unsigned long inter_staycycles;
 #define DEFAULT_STAYCYCLES_RESETFREQ 883200
 static u64 staycycles_resetfreq;
 
-#define DEFAULT_IO_IS_BUSY 0
+#define DEFAULT_IO_IS_BUSY 1
 static unsigned int io_is_busy;
 
-static u64 screen_on_min_freq = 300000;
+static u64 screen_on_min_freq = 268800;
 
 /*
  * Tunables end
