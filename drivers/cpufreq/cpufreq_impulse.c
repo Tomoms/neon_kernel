@@ -465,6 +465,8 @@ static void cpufreq_impulse_timer(unsigned long data)
 			if (new_freq < this_hispeed_freq)
 				new_freq = this_hispeed_freq;
 		}
+	} else if (cpu_load <= 5) {
+		new_freq = ppol->policy->cpuinfo.min_freq;
 	} else {
 		new_freq = choose_freq(ppol, loadadjfreq);
 		if (new_freq > tunables->hispeed_freq &&
