@@ -3090,7 +3090,6 @@ int adreno_idle(struct kgsl_device *device)
 {
 	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
 	unsigned long wait = jiffies + msecs_to_jiffies(ADRENO_IDLE_TIMEOUT);
-	int ret;
 
 	/*
 	 * Make sure the device mutex is held so the dispatcher can't send any
@@ -3108,18 +3107,7 @@ int adreno_idle(struct kgsl_device *device)
 			adreno_getreg(adreno_dev, ADRENO_REG_RBBM_STATUS) << 2,
 			0x110, 0x110);
 
-	/* Check if we are already idle before idling dispatcher */
-	if (adreno_isidle(device))
-		return 0;
-	/*
-	 * Wait for dispatcher to finish completing commands
-	 * already submitted
-	 */
-	ret = adreno_dispatcher_idle(adreno_dev);
-	if (ret)
-		return ret;
-
-	while (time_before(jiffies, wait)) {
+	do {
 		/*
 		 * If we fault, stop waiting and return an error. The dispatcher
 		 * will clean up the fault from the work queue, but we need to
@@ -3132,7 +3120,8 @@ int adreno_idle(struct kgsl_device *device)
 
 		if (adreno_isidle(device))
 			return 0;
-	}
+
+	} while (time_before(jiffies, wait));
 
 	/*
 	 * Under rare conditions, preemption can cause the while loop to exit

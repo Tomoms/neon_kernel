@@ -127,7 +127,6 @@ enum coresight_debug_reg {
  * submitted operation
  * @work: work_struct to put the dispatcher in a work queue
  * @kobj: kobject for the dispatcher directory in the device sysfs node
- * @idle_gate: Gate to wait on for dispatcher to idle
  */
 struct adreno_dispatcher {
 	struct mutex mutex;
@@ -143,7 +142,6 @@ struct adreno_dispatcher {
 	unsigned int tail;
 	struct kthread_work work;
 	struct kobject kobj;
-	struct completion idle_gate;
 };
 
 enum adreno_dispatcher_flags {
@@ -204,7 +202,6 @@ struct adreno_device {
 
 	struct work_struct input_work;
 	unsigned int ram_cycles_lo;
-	atomic_t halt;
 };
 
 /**
@@ -515,7 +512,8 @@ void *adreno_snapshot(struct kgsl_device *device, void *snapshot, int *remain,
 void adreno_dispatcher_start(struct kgsl_device *device);
 int adreno_dispatcher_init(struct adreno_device *adreno_dev);
 void adreno_dispatcher_close(struct adreno_device *adreno_dev);
-int adreno_dispatcher_idle(struct adreno_device *adreno_dev);
+int adreno_dispatcher_idle(struct adreno_device *adreno_dev,
+		unsigned int timeout);
 void adreno_dispatcher_irq_fault(struct kgsl_device *device);
 void adreno_dispatcher_stop(struct adreno_device *adreno_dev);
 
@@ -863,7 +861,7 @@ static inline void adreno_debugfs_init(struct kgsl_device *device) { }
 
 /**
  * adreno_gpu_fault() - Return the current state of the GPU
- * @adreno_dev: A pointer to the adreno_device to query
+ * @adreno_dev: A ponter to the adreno_device to query
  *
  * Return 0 if there is no fault or positive with the last type of fault that
  * occurred
@@ -872,18 +870,6 @@ static inline unsigned int adreno_gpu_fault(struct adreno_device *adreno_dev)
 {
 	smp_rmb();
 	return atomic_read(&adreno_dev->dispatcher.fault);
-}
-
-/**
- * adreno_gpu_halt() - Return the halt status of GPU
- * @adreno_dev: A pointer to the adreno_device to query
- *
- * Return the halt request value
- */
-static inline unsigned int adreno_gpu_halt(struct adreno_device *adreno_dev)
-{
-	smp_rmb();
-	return atomic_read(&adreno_dev->halt);
 }
 
 /**
@@ -897,18 +883,6 @@ static inline void adreno_set_gpu_fault(struct adreno_device *adreno_dev,
 {
 	/* only set the fault bit w/o overwriting other bits */
 	atomic_add(state, &adreno_dev->dispatcher.fault);
-	smp_wmb();
-}
-
-/**
- * adreno_set_gpu_halt() - Set the halt request
- * @adreno_dev: A pointer to the adreno_device to set
- * @state: Value to set
- */
-static inline void adreno_set_gpu_halt(struct adreno_device *adreno_dev,
-	int state)
-{
-	atomic_set(&adreno_dev->halt, state);
 	smp_wmb();
 }
 
