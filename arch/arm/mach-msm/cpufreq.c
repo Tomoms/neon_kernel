@@ -402,6 +402,7 @@ static int msm_cpufreq_pm_event(struct notifier_block *this,
 
 static struct notifier_block msm_cpufreq_pm_notifier = {
 	.notifier_call = msm_cpufreq_pm_event,
+        .priority = INT_MAX,
 };
 
 static struct freq_attr *msm_freq_attr[] = {
