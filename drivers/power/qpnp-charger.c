@@ -5042,7 +5042,7 @@ qpnp_chg_adjust_vddmax(struct qpnp_chg_chip *chip, int vbat_mv)
 }
 #endif
 
-#define CONSECUTIVE_COUNT	3
+#define CONSECUTIVE_COUNT	10
 #define CONSECUTIVE_COUNT_POSITIVE	12 /* yangfangbiao@oneplus.cn, 2015/01/06  Add for  sync with KK charge standard  */
 #define VBATDET_MAX_ERR_MV	50
 /* OPPO 2013-11-07 wangjc Modify begin for use bq charger */
