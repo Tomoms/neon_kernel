@@ -1757,7 +1757,7 @@ dump_lim_send_rrm_action( tpAniSirGlobal pMac, tANI_U32 arg1, tANI_U32 arg2, tAN
     tSirMacRadioMeasureReport *pRRMReport =
             vos_mem_malloc(4*sizeof(tSirMacRadioMeasureReport));
     tANI_U8 num = (tANI_U8)(arg4 > 4 ? 4 : arg4);
-    tANI_U8 i;
+    int i;
 
     if (!pRRMReport)
     {
