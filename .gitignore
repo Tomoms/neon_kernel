@@ -33,6 +33,7 @@ modules.builtin
 *.patch
 *.gcno
 *.img
+dtbToolCM
 
 #
 # Top-level generic files
