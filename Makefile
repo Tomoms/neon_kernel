@@ -326,10 +326,12 @@ MAKEFLAGS += --include-dir=$(srctree)
 $(srctree)/scripts/Kbuild.include: ;
 include $(srctree)/scripts/Kbuild.include
 
+LD_FLAGS = -O3 --sort-common --strip-debug
+
 # Make variables (CC, etc...)
 
 AS		= $(CROSS_COMPILE)as
-LD		= $(CROSS_COMPILE)ld
+LD		= $(CROSS_COMPILE)ld $(LDFLAGS)
 CC		= $(CROSS_COMPILE)gcc
 CPP		= $(CC) -E
 AR		= $(CROSS_COMPILE)ar
@@ -347,10 +349,15 @@ CHECK		= sparse
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
+
+GRAPHITE	= -fgraphite -floop-flatten -floop-parallelize-all \
+		  -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block \
+		  -floop-nest-optimize
+WORKING		= -mvectorize-with-neon-quad -fopenmp -fivopts -funroll-loops -fsched-pressure -fira-loop-pressure -munaligned-access -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fweb -frename-registers -fforce-addr -fsched-spec-load
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	=
+CFLAGS_KERNEL	= $(GRAPHITE) $(WORKING)
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
@@ -368,7 +375,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks
+		   -fno-delete-null-pointer-checks \
+		   $(GRAPHITE) $(WORKING)
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
