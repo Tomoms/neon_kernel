@@ -245,8 +245,8 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -pipe
-HOSTCXXFLAGS = -O2 -pipe
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -pipe -fgcse-las
+HOSTCXXFLAGS = -O2 -pipe -fgcse-las
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -350,15 +350,15 @@ CHECK		= sparse
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 
-GRAPHITE	= -fgraphite -floop-flatten -floop-parallelize-all \
+GRAPHITE	= -fgraphite -fgraphite-identity -floop-flatten -floop-parallelize-all \
 		  -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block \
 		  -floop-nest-optimize
-WORKING		= -mvectorize-with-neon-quad -fopenmp -fivopts -funroll-loops -fsched-pressure -fira-loop-pressure -munaligned-access -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fweb -frename-registers -fforce-addr -fsched-spec-load
+WORKING		= -mvectorize-with-neon-quad -fopenmp -fivopts -funroll-loops -fsched-pressure -fira-loop-pressure -munaligned-access -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fweb -frename-registers -fforce-addr -fsched-spec-load -fgcse-las -fgcse-lm -fgcse-sm -funswitch-loops -fpredictive-commoning -fgcse-after-reload -finline-functions -fno-strict-aliasing -fsched-spec-load -fsched-spec-load-dangerous -ftree-partial-pre -ftree-vectorize
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	= $(GRAPHITE) $(WORKING)
-AFLAGS_KERNEL	=
+CFLAGS_KERNEL	= $(GRAPHITE) $(WORKING) -munaligned-access
+AFLAGS_KERNEL	= -munaligned-access
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
@@ -377,8 +377,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
 		   $(GRAPHITE) $(WORKING)
-KBUILD_AFLAGS_KERNEL :=
-KBUILD_CFLAGS_KERNEL :=
+KBUILD_AFLAGS_KERNEL := -munaligned-access
+KBUILD_CFLAGS_KERNEL := $(GRAPHITE) $(WORKING)
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE -fno-pic
