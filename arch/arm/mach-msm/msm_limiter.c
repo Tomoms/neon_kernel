@@ -23,6 +23,8 @@
 #include <linux/powersuspend.h>
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
 #include <linux/earlysuspend.h>
+#elif defined(CONFIG_STATE_NOTIFIER)
+#include <linux/state_notifier.h>
 #endif
 
 #define MSM_CPUFREQ_LIMIT_MAJOR		3
@@ -30,10 +32,10 @@
 
 #define MSM_LIMIT			"msm_limiter"
 #define LIMITER_ENABLED			1
-#define DEFAULT_SUSPEND_DEFER_TIME	10
-#define DEFAULT_SUSPEND_FREQUENCY	1728000
-#define DEFAULT_RESUME_FREQUENCY	2265600
-#define DEFAULT_MIN_FREQUENCY		300000
+#define DEFAULT_SUSPEND_DEFER_TIME	1
+#define DEFAULT_SUSPEND_FREQUENCY	1958400
+#define DEFAULT_RESUME_FREQUENCY	2457600
+#define DEFAULT_MIN_FREQUENCY		268800
 
 static unsigned int debug = 0;
 module_param_named(debug_mask, debug, uint, 0644);
@@ -55,7 +57,7 @@ static struct cpu_limit {
 	struct work_struct resume_work;
 	struct mutex resume_suspend_mutex;
 	struct mutex msm_limiter_mutex[4];
-#ifdef CONFIG_LCD_NOTIFY
+#if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_STATE_NOTIFIER)
 	struct notifier_block notif;
 #endif
 } limit = {
@@ -132,7 +134,7 @@ static void msm_limit_resume(struct work_struct *work)
 		update_cpu_max_freq(cpu);
 }
 
-#ifdef CONFIG_LCD_NOTIFY
+#if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_STATE_NOTIFIER)
 static void __msm_limit_suspend(void)
 #elif defined(CONFIG_POWERSUSPEND)
 static void __msm_limit_suspend(struct power_suspend *handler)
@@ -148,8 +150,8 @@ static void __msm_limit_suspend(struct early_suspend *handler)
 			msecs_to_jiffies(limit.suspend_defer_time * 1000));
 }
 
-#ifdef CONFIG_LCD_NOTIFY
-static void __msm_limit_resume(void)
+#if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_STATE_NOTIFIER)
+static void __msm_limit_resume(void) // __ref ?
 #elif defined(CONFIG_POWERSUSPEND)
 static void __msm_limit_resume(struct power_suspend *handler)
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
@@ -180,6 +182,26 @@ static int lcd_notifier_callback(struct notifier_block *nb,
 		break;
 	default:
 		break;
+	}
+
+	return NOTIFY_OK;
+}
+#elif defined(CONFIG_STATE_NOTIFIER)
+static int state_notifier_callback(struct notifier_block *this,
+				unsigned long event, void *data)
+{
+	if (!limit.limiter_enabled)
+		return NOTIFY_OK;
+
+	switch (event) {
+		case STATE_NOTIFIER_ACTIVE:
+			__msm_limit_resume();
+			break;
+		case STATE_NOTIFIER_SUSPEND:
+			__msm_limit_suspend();
+			break;
+		default:
+			break;
 	}
 
 	return NOTIFY_OK;
@@ -218,6 +240,13 @@ static int msm_cpufreq_limit_start(void)
 			MSM_LIMIT);
 		goto err_dev;
 	}
+#elif defined(CONFIG_STATE_NOTIFIER)
+	limit.notif.notifier_call = state_notifier_callback;
+	if (state_register_client(&limit.notif)) {
+		pr_err("%s: Failed to register State notifier callback\n",
+			MSM_LIMIT);
+		goto err_dev;
+	}
 #elif defined(CONFIG_POWERSUSPEND)
 	register_power_suspend(&msm_limit_power_suspend_driver);
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
@@ -234,7 +263,7 @@ static int msm_cpufreq_limit_start(void)
 	queue_work_on(0, limiter_wq, &limit.resume_work);
 
 	return ret;
-#ifdef CONFIG_LCD_NOTIFY
+#if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_STATE_NOTIFIER)
 err_dev:
 	destroy_workqueue(limiter_wq);
 #endif
@@ -258,6 +287,9 @@ static void msm_cpufreq_limit_stop(void)
 
 #ifdef CONFIG_LCD_NOTIFY
 	lcd_unregister_client(&limit.notif);
+	limit.notif.notifier_call = NULL;
+#elif defined(CONFIG_STATE_NOTIFIER)
+	state_unregister_client(&limit.notif);
 	limit.notif.notifier_call = NULL;
 #elif defined(CONFIG_POWERSUSPEND)
 	unregister_power_suspend(&msm_limit_power_suspend_driver);
