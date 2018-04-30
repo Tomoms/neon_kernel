@@ -22,10 +22,6 @@
 #include <linux/of.h>
 #include <linux/cpumask.h>
 
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-#include <linux/cpufreq.h>
-#endif
-
 #include <asm/cputype.h>
 
 #include <mach/rpm-regulator-smd.h>
