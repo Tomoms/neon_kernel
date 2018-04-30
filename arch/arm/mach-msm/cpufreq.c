@@ -511,7 +511,7 @@ static int cpufreq_parse_dt(struct device *dev)
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 	dts_freq_table =
 		devm_kzalloc(dev, (nf + 1) *
-			sizeof(*dts_freq_table),
+			sizeof(struct cpufreq_frequency_table),
 			GFP_KERNEL);
 
 	if (!dts_freq_table)
