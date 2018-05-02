@@ -353,7 +353,7 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 GRAPHITE	= -fgraphite -fgraphite-identity -floop-flatten -floop-parallelize-all \
 		  -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block \
 		  -floop-nest-optimize
-WORKING		= -mvectorize-with-neon-quad -fopenmp -fivopts -funroll-loops -fsched-pressure -fira-loop-pressure -munaligned-access -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fweb -frename-registers -fforce-addr -fsched-spec-load -fgcse-las -fgcse-lm -fgcse-sm -funswitch-loops -fpredictive-commoning -fgcse-after-reload -finline-functions -fno-strict-aliasing -fsched-spec-load -fsched-spec-load-dangerous -ftree-partial-pre -ftree-vectorize
+WORKING		= -mvectorize-with-neon-quad -fopenmp -fivopts -funroll-loops -fsched-pressure -fira-loop-pressure -munaligned-access -ftree-loop-distribution -ftree-loop-ivcanon -ftree-loop-im -fweb -frename-registers -fforce-addr -fsched-spec-load -fgcse-las -fgcse-lm -fgcse-sm -funswitch-loops -fpredictive-commoning -fgcse-after-reload -finline-functions -fno-strict-aliasing -fsched-spec-load -fsched-spec-load-dangerous -ftree-partial-pre -ftree-vectorize -fmodulo-sched -fmodulo-sched-allow-regmoves
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
