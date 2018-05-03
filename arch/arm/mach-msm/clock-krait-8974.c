@@ -21,6 +21,9 @@
 #include <linux/regulator/consumer.h>
 #include <linux/of.h>
 #include <linux/cpumask.h>
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+#include <linux/cpufreq.h>
+#endif
 
 #include <asm/cputype.h>
 
@@ -601,6 +604,76 @@ static int __init get_cpu_underclock(char *unused)
 	return 0;
 }
 __setup("no_underclock", get_cpu_underclock);
+#endif
+
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+/* Nominal voltage range for general MSM8974 SoC. */
+#define CPU_VDD_MAX	1450
+#define CPU_VDD_MIN	600
+
+extern int use_for_scaling(unsigned int freq);
+static unsigned int cnt;
+
+ssize_t show_UV_mV_table(struct cpufreq_policy *policy,
+			 char *buf)
+{
+	int i, freq, len = 0;
+	unsigned int cpu = 0;
+	unsigned int num_levels = cpu_clk[cpu]->vdd_class->num_levels;
+
+	if (!buf)
+		return -EINVAL;
+
+	for (i = 0; i < num_levels; i++) {
+		freq = use_for_scaling(cpu_clk[cpu]->fmax[i] / 1000);
+		if (freq < 0)
+			continue;
+
+		len += sprintf(buf + len, "%dmhz: %u mV\n", freq / 1000,
+			       cpu_clk[cpu]->vdd_class->vdd_uv[i] / 1000);
+	}
+
+	return len;
+}
+
+ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
+			  char *buf, size_t count)
+{
+	int i, j;
+	int ret = 0;
+	unsigned int val, cpu = 0;
+	unsigned int num_levels = cpu_clk[cpu]->vdd_class->num_levels;
+	char size_cur[4];
+
+	if (cnt) {
+		cnt = 0;
+		return -EINVAL;
+	}
+
+	for (i = 0; i < num_levels; i++) {
+		if (use_for_scaling(cpu_clk[cpu]->fmax[i] / 1000) < 0)
+			continue;
+
+		ret = sscanf(buf, "%u", &val);
+		if (!ret)
+			return -EINVAL;
+
+		if (val > CPU_VDD_MAX)
+			val = CPU_VDD_MAX;
+		else if (val < CPU_VDD_MIN)
+			val = CPU_VDD_MIN;
+
+		for (j = 0; j < NR_CPUS; j++)
+			cpu_clk[j]->vdd_class->vdd_uv[i] = val * 1000;
+
+		ret = sscanf(buf, "%s", size_cur);
+		cnt = strlen(size_cur);
+		buf += cnt + 1;
+	}
+	pr_warn("Voltage: userspace table modified\n");
+
+	return ret;
+}
 #endif
 
 static int clock_krait_8974_driver_probe(struct platform_device *pdev)

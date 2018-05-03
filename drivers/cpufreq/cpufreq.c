@@ -694,6 +694,14 @@ static ssize_t show_bios_limit(struct cpufreq_policy *policy, char *buf)
 	return sprintf(buf, "%u\n", policy->cpuinfo.max_freq);
 }
 
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+extern ssize_t show_UV_mV_table(struct cpufreq_policy *policy,
+				char *buf);
+
+extern ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
+				 const char *buf, size_t count);
+#endif
+
 cpufreq_freq_attr_ro_perm(cpuinfo_cur_freq, 0400);
 cpufreq_freq_attr_ro(cpuinfo_min_freq);
 cpufreq_freq_attr_ro(cpuinfo_max_freq);
@@ -711,6 +719,9 @@ cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
 cpufreq_freq_attr_ro(policy_min_freq);
 cpufreq_freq_attr_ro(policy_max_freq);
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+cpufreq_freq_attr_rw(UV_mV_table);
+#endif
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
@@ -727,6 +738,9 @@ static struct attribute *default_attrs[] = {
 	&scaling_setspeed.attr,
 	&policy_min_freq.attr,
 	&policy_max_freq.attr,
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+	&UV_mV_table.attr,
+#endif
 	NULL
 };
 
@@ -1210,8 +1224,8 @@ static int __cpufreq_remove_dev(struct device *dev, struct subsys_interface *sif
 			CPUFREQ_NAME_LEN);
 	per_cpu(cpufreq_policy_save, cpu).min = data->user_policy.min;
 	per_cpu(cpufreq_policy_save, cpu).max = data->user_policy.max;
-	per_cpu(cpufreq_policy_save, cpu).min_freq = policy->cpuinfo.min_freq;
-	per_cpu(cpufreq_policy_save, cpu).max_freq = policy->cpuinfo.max_freq;
+	per_cpu(cpufreq_policy_save, cpu).min_freq = data->cpuinfo.min_freq;
+	per_cpu(cpufreq_policy_save, cpu).max_freq = data->cpuinfo.max_freq;
 	pr_debug("Saving CPU%d user policy min %d and max %d\n",
 			cpu, data->user_policy.min, data->user_policy.max);
 #endif
@@ -2147,6 +2161,24 @@ char *cpufreq_get_gov(unsigned int cpu)
 	return val;
 }
 EXPORT_SYMBOL(cpufreq_get_gov);
+
+/*
+ *	cpufreq_quick_get_util - get the CPU utilization
+ *	@cpu: CPU whose load needs to be known
+ */
+unsigned int cpufreq_quick_get_util(unsigned int cpu)
+{
+	struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
+	unsigned int load = 0;
+
+	if (policy) {
+		load = policy->util;
+		cpufreq_cpu_put(policy);
+	}
+
+	return load;
+}
+EXPORT_SYMBOL(cpufreq_quick_get_util);
 #endif
 
 static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,

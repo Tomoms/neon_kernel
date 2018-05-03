@@ -47,6 +47,9 @@ static struct clk *l2_clk;
 static unsigned int freq_index[NR_CPUS];
 static unsigned int max_freq_index;
 static struct cpufreq_frequency_table *freq_table;
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+static struct cpufreq_frequency_table *krait_freq_table;
+#endif
 static unsigned int *l2_khz;
 static unsigned long *mem_bw;
 static bool hotplug_ready;
@@ -450,6 +453,14 @@ static int cpufreq_parse_dt(struct device *dev)
 	if (!freq_table || !mem_bw)
 		return -ENOMEM;
 
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+	/* Create frequence table with unrounded values */
+	krait_freq_table = devm_kzalloc(dev, (nf + 1) * sizeof(*krait_freq_table),
+					GFP_KERNEL);
+	if (!krait_freq_table)
+		return -ENOMEM;
+#endif
+
 	if (l2_clk) {
 		l2_khz = devm_kzalloc(dev, nf * sizeof(*l2_khz), GFP_KERNEL);
 		if (!l2_khz)
@@ -485,6 +496,9 @@ static int cpufreq_parse_dt(struct device *dev)
 
 		freq_table[i].index = i;
 		freq_table[i].frequency = f;
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+		krait_freq_table[i].frequency = f;
+#endif
 
 		if (l2_clk) {
 			f = clk_round_rate(l2_clk, data[j++] * 1000);
@@ -503,6 +517,9 @@ static int cpufreq_parse_dt(struct device *dev)
 
 	freq_table[i].index = i;
 	freq_table[i].frequency = CPUFREQ_TABLE_END;
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+	krait_freq_table[i].frequency = CPUFREQ_TABLE_END;
+#endif
 
 	devm_kfree(dev, data);
 
@@ -543,6 +560,22 @@ const struct file_operations msm_cpufreq_fops = {
 	.llseek		= seq_lseek,
 	.release	= seq_release,
 };
+#endif
+
+#ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
+int use_for_scaling(unsigned int freq)
+{
+	unsigned int i;
+
+	if (!krait_freq_table)
+		return -EINVAL;
+
+	for (i = 0; krait_freq_table[i].frequency < CPUFREQ_TABLE_END; i++)
+		if (freq == krait_freq_table[i].frequency)
+			return freq;
+
+	return -EINVAL;
+}
 #endif
 
 static int __init msm_cpufreq_probe(struct platform_device *pdev)
