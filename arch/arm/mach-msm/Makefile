@@ -429,5 +429,6 @@ obj-$(CONFIG_PERFMAP) += perfmap.o
 
 obj-$(CONFIG_ALUCARD_HOTPLUG) += alucard_hotplug.o
 obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
+obj-$(CONFIG_AUTOSMP_HOTPLUG) += autosmp.o
 obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
