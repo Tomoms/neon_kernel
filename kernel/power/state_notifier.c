@@ -1,7 +1,7 @@
 /*
  * State Notifier Driver
  *
- * Copyright (c) 2013-2016, Pranav Vashi <neobuddy89@gmail.com>
+ * Copyright (c) 2013-2017, Pranav Vashi <neobuddy89@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -117,7 +117,8 @@ void state_suspend(void)
 void state_resume(void)
 {
 	dprintk("%s: resume called.\n", STATE_NOTIFIER);
-	cancel_delayed_work_sync(&suspend_work);
+	if (delayed_work_pending(&suspend_work))
+		cancel_delayed_work_sync(&suspend_work);
 	suspend_in_progress = false;
 
 	if (state_suspended)
@@ -126,7 +127,9 @@ void state_resume(void)
 
 static int __init state_notifier_init(void)
 {
-	susp_wq = create_singlethread_workqueue("state_susp_wq");
+	susp_wq =
+	    alloc_workqueue("state_susp_wq",
+			    WQ_HIGHPRI | WQ_UNBOUND | WQ_MEM_RECLAIM, 0);
 	if (!susp_wq)
 		pr_err("State notifier failed to allocate suspend workqueue\n");
 
