@@ -409,7 +409,9 @@ static void cpufreq_impulse_timer(unsigned long data)
 	if (cpu_load <= go_lowspeed_load && !boost_val) {
 		boosted = false;
 		new_freq = pcpu->policy->cpuinfo.min_freq;
-	} else {
+	}  else if (cpu_load <= 5)
+		new_freq = pcpu->policy->cpuinfo.min_freq;
+	else {
 		new_freq = choose_freq(pcpu, loadadjfreq);
 	}
 
